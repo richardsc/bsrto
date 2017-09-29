@@ -13,3 +13,7 @@ Running the app requires two parts:
 # Requirements
 
 * R packages: `oce`, `curl`, `shiny` (of course)
+
+* the `curl` package also requires libcurl, installed with:
+
+		$ sudo apt-get install libcurl4-openssl-dev
