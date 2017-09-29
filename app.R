@@ -1,8 +1,8 @@
 library(shiny)
 library(oce)
-load('../003/03_mc.rda')
-load('../003/04_ips.rda')
-load('../003/07_icl.rda')
+load('mc.rda')
+load('ips.rda')
+load('cl.rda')
 ipsTime <- numberAsPOSIXct(unlist(lapply(ips, function(x) x[['time']])))
 maxDraft <- unlist(lapply(ips, function(x) x[['maxDraft']]))
 meanDraft <- unlist(lapply(ips, function(x) x[['meanDraft']]))
@@ -89,9 +89,9 @@ server <- function(input, output) {
     state <- reactiveValues()
     
     output$plot <- renderPlot({
-        load('../003/03_mc.rda')
-        load('../003/04_ips.rda')
-        load('../003/07_icl.rda')
+        load('mc.rda')
+        load('ips.rda')
+        load('icl.rda')
         ipsTime <- numberAsPOSIXct(unlist(lapply(ips, function(x) x[['time']])))
         maxDraft <- unlist(lapply(ips, function(x) x[['maxDraft']]))
         meanDraft <- unlist(lapply(ips, function(x) x[['meanDraft']]))
@@ -139,9 +139,9 @@ server <- function(input, output) {
     })
 
     output$plot2 <- renderPlot( {
-        load('../003/03_mc.rda')
-        load('../003/04_ips.rda')
-        load('../003/07_icl.rda')
+        load('mc.rda')
+        load('ips.rda')
+        load('icl.rda')
         ipsTime <- numberAsPOSIXct(unlist(lapply(ips, function(x) x[['time']])))
         maxDraft <- unlist(lapply(ips, function(x) x[['maxDraft']]))
         meanDraft <- unlist(lapply(ips, function(x) x[['meanDraft']]))
