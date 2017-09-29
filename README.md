@@ -9,3 +9,7 @@ Running the app requires two parts:
    app
 
 2. Run the shiny app loading the local data.
+
+# Requirements
+
+* R packages: `oce`, `curl`, `shiny` (of course)
