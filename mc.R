@@ -21,9 +21,9 @@ for (m in inst) {
     d <- dd[!bad,]
     time <- as.POSIXct(paste(d$date, d$time), format='%d %b %Y %H:%M:%S', tz='UTC')
     d <- d[order(as.numeric(time)),]
-    mc[[i]] <- as.ctd(temperature=d$temperature,
-                      conductivity=d$conductivity,
-                      pressure=d$pressure,
+    mc[[i]] <- as.ctd(temperature=as.numeric(d$temperature),
+                      conductivity=as.numeric(d$conductivity),
+                      pressure=as.numeric(d$pressure),
                       units = list(temperature=list(unit=expression(degree*C), scale='ITS-90'),
                                    conductivity=list(unit=expression(S/m), scale=''),
                                    pressure=list(unit=expression(dbar), scale='')),
