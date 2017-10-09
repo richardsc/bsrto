@@ -14,7 +14,13 @@ i <- 1
 mc <- list()
 for (m in inst) {
     system(paste0('cat ', datadir, m, '/* > ', m, '.mc'))
-    d <- read.csv(paste0(m, '.mc'), col.names=mc_names[[i]], stringsAsFactors=FALSE)
+    dd <- read.csv(paste0(m, '.mc'), col.names=mc_names[[i]], stringsAsFactors=FALSE)
+    time <- as.POSIXct(paste(dd$date, dd$time), format='%d %b %Y %H:%M:%S', tz='UTC')
+    ## any with messed up times? (e.g. sample 544 from imm)
+    bad <- is.na(time)
+    d <- dd[!bad,]
+    time <- as.POSIXct(paste(d$date, d$time), format='%d %b %Y %H:%M:%S', tz='UTC')
+    d <- d[order(as.numeric(time)),]
     mc[[i]] <- as.ctd(temperature=d$temperature,
                       conductivity=d$conductivity,
                       pressure=d$pressure,
