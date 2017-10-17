@@ -91,14 +91,17 @@ shinyServer(function(input, output) {
                 }
             } else if (input$select == 3) {
                 if (is.null(state$xlim)) {
-                    oce.plot.ts(ipsTime, maxDraft-pAtm/100, type='b', pch=3, ylim=c(-1, 11),
+                    oce.plot.ts(ipsTime, maxDraft-pAtm/100, type='b', pch=3,
+                                ylim=c(-1, max(maxDraft-pAtm/100)),
                                 ylab='Ice draft [m]')
                     grid()
                     legend('topleft', c('Maximum Draft', 'Mean Draft'), pch=c(3, 1))
                     points(ipsTime, meanDraft-pAtm/100)
                 } else {
-                    oce.plot.ts(ipsTime, maxDraft-pAtm/100, type='b', pch=3, ylim=c(-1, 11),
-                                ylab='Ice draft [m]', xlim=state$xlim)
+                    oce.plot.ts(ipsTime, maxDraft-pAtm/100, type='b', pch=3,
+                                ylab='Ice draft [m]',
+                                ylim=c(-1, max(maxDraft-pAtm/100)),
+                                xlim=state$xlim)
                     grid()
                     legend('topleft', c('Maximum Draft', 'Mean Draft'), pch=c(3, 1))
                     points(ipsTime, meanDraft-pAtm/100)
@@ -140,9 +143,20 @@ shinyServer(function(input, output) {
                  xlab='Ice draft [m]')
             mtext(ipsTime[s], cex=1.75, line=1.4)
             box()
-            abline(v=maxDraft[s] - pAtm/100)
-            mtext(paste0(format(maxDraft[s]-pAtm[s]/100, digits=4), ' m'), at=maxDraft[s]-pAtm[s]/100,
-                  cex=2, font=2, col=2)
+            abline(v=maxDraft[s] - pAtm[s]/100, col=2, lwd=2)
+            if (maxDraft[s]-pAtm[s]/100 > 12) {
+                mtext(paste0('Maximum Draft: ', format(maxDraft[s]-pAtm[s]/100, digits=4), ' m'),
+                      at=12,
+                      cex=2, font=2, col=2, adj=1)
+            } else if (maxDraft[s]-pAtm[s]/100 < 2) {
+                mtext(paste0('Maximum Draft: ', format(maxDraft[s]-pAtm[s]/100, digits=4), ' m'),
+                      at=maxDraft[s]-pAtm[s]/100,
+                      cex=2, font=2, col=2, adj=0)
+            } else {
+                mtext(paste0('Maximum Draft: ', format(maxDraft[s]-pAtm[s]/100, digits=4), ' m'),
+                      at=maxDraft[s]-pAtm[s]/100,
+                      cex=2, font=2, col=2, adj=1)
+            }
 
         }
     }
