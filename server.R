@@ -84,10 +84,10 @@ shinyServer(function(input, output) {
             } else if (input$select == 2) {
                 if (is.null(state$xlim)) {
                     imagep(time, freq, spec, ylab='Frequency [Hz]', col=oceColorsViridis,
-                           zlim=c(0, 40))
+                           zlim=c(0, 40), decimate=FALSE)
                 } else {
                     imagep(time, freq, spec, ylab='Frequency [Hz]', col=oceColorsViridis,
-                           zlim=c(0, 40), xlim=state$xlim)
+                           zlim=c(0, 40), xlim=state$xlim, decimate=FALSE)
                 }
             } else if (input$select == 3) {
                 if (is.null(state$xlim)) {
@@ -132,7 +132,7 @@ shinyServer(function(input, output) {
             imagep(icl[[s]][['time']], icl[[s]][['freq']], icl[[s]][['spec']],
                    ylab='Frequency [Hz]', drawTimeRange = FALSE,
                    zlab=time[s], col=oceColorsViridis,
-                   zlim=c(0, 40))
+                   zlim=c(0, 40), decimate=FALSE)
         } else if (input$select == 3) {
             if (is.null(state$whichips)) {
                 s <- length(ipsTime)
