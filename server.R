@@ -57,6 +57,19 @@ findNearest <- function(x, n) {
     which(abs(x-n)==min(abs(x-n)))
 }
 
+whichmc <- function(input) {
+    res <- if (input == "40m") {
+               "mcI"
+           } else if (input == "60m") {
+               "mcA"
+           } else if (input == "80m") {
+               "imm"
+           } else if (input == "160m") {
+               "mcH"
+           }
+    return(res)
+}
+
 shinyServer(function(input, output) {
     state <- reactiveValues()
     
@@ -70,16 +83,10 @@ shinyServer(function(input, output) {
         pAtm <- unlist(lapply(ips, function(x) x[['barometricPressure']])) - 25
         if (!is.null(input$select)) {
             if (input$select == 1) {
-                if (input$mc == "40m") {
-                    mcplot(mc[['mcI']], input$field)
-                } else if (input$mc == "60m") {
-                    mcplot(mc[['mcA']], input$field)
-                } else if (input$mc == "80m") {
-                    mcplot(mc[['imm']], input$field)
-                } else if (input$mc == "160m") {
-                    mcplot(mc[['mcH']], input$field)
-                } else if (input$mc == "All") {
+                if (input$mc == "All") {
                     mcplot(mc, input$field)
+                } else {
+                    mcplot(mc[[whichmc(input$mc)]], input$field)
                 }
             } else if (input$select == 2) {
                 if (is.null(state$xlim)) {
@@ -122,7 +129,13 @@ shinyServer(function(input, output) {
         meanDraft <- unlist(lapply(ips, function(x) x[['meanDraft']]))
         pAtm <- unlist(lapply(ips, function(x) x[['barometricPressure']])) - 25
         if (input$select == 1) {
-            plot(0:1, 0:1, xlab="", ylab="", axes=FALSE, type="n")    
+            ## plot(0:1, 0:1, xlab="", ylab="", axes=FALSE, type="n")
+            if (is.null(state$brushed)) {
+                mcplot(mc[[whichmc(input$mc)]], "T/S")
+            } else {
+                tmp <- subset(mc[[whichmc(input$mc)]], state$brushed)
+                plotTS(tmp)
+            }
         } else if (input$select == 2) {
             if (is.null(state$which)) {
                 s <- length(time)
@@ -170,7 +183,16 @@ shinyServer(function(input, output) {
         }
     })
     observeEvent(input$plot_brush, {
-        state$xlim <- c(input$plot_brush$xmin, input$plot_brush$xmax)
+        if (input$select == 1) {
+            if (input$mc == "All") {
+                mcplot(mc, input$field)
+            } else {
+                df <- data.frame(x=mc[[whichmc(input$mc)]][['time']], x=mc[[whichmc(input$mc)]][[input$field]])
+            }
+            state$brushed <- brushedPoints(df, input$plot_brush, "x", "y", allRows=TRUE)$selected_
+        } else {
+            state$xlim <- c(input$plot_brush$xmin, input$plot_brush$xmax)
+        }
     })
     observeEvent(input$reseticl, {
         state$xlim <- range(time)
