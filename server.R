@@ -13,16 +13,16 @@ for (i in seq_along(time)) {
 }
 names(timelist) <- format(time)
 
-mcplot <- function(x, field) {
-    if (is.list(x)) {
+mcplot <- function(x, field, pch=21, col, add=FALSE) {
+    if (length(x) > 1) {
         if (field == "T/S") {
             Srange <- range(unlist(lapply(x, function(x) x[['salinity']])), na.rm=TRUE)
             Trange <- range(unlist(lapply(x, function(x) x[['temperature']])), na.rm=TRUE)
             for (i in 1:length(x)) {
                 if (i == 1) {
-                    plotTS(x[[i]], cex=1.5, pch=21, pt.bg=i, Tlim=Trange, Slim=Srange)
+                    plotTS(x[[i]], cex=1.5, pch=21, pt.bg=ifelse(missing(col), i, col), Tlim=Trange, Slim=Srange)
                 } else {
-                    plotTS(x[[i]], cex=1.5, pch=21, pt.bg=i, add=TRUE)
+                    plotTS(x[[i]], cex=1.5, pch=21, pt.bg=ifelse(missing(col), i, col), add=TRUE)
                 }
             }
         } else {
@@ -31,13 +31,14 @@ mcplot <- function(x, field) {
                 if (i == 1) {
                     oce.plot.ts(x[[i]][['time']], x[[i]][[field]], ylab=field, ylim=range)
                 } else {
-                    lines(x[[i]][['time']], x[[i]][[field]], col=i)
+                    lines(x[[i]][['time']], x[[i]][[field]], col=ifelse(missing(col), i, col))
                 }
             }
         }
     } else {
+        x <- x[[1]]
         if (field == "T/S") {
-            plotTS(x, cex=1.5, pch=21, pt.bg='lightgrey')
+            plotTS(x, cex=1.5, pch=pch, pt.bg=ifelse(missing(col), 'lightgrey', col), add=add)
         } else {
             if (field == 'oxygen' & !('oxygen' %in% names(x@data))) {
                 plot(0:1, 0:1, xlab="", ylab="", axes=FALSE, type="n")
@@ -66,6 +67,8 @@ whichmc <- function(input) {
                "imm"
            } else if (input == "160m") {
                "mcH"
+           } else if (input == "All") {
+               1:4
            }
     return(res)
 }
@@ -83,11 +86,7 @@ shinyServer(function(input, output) {
         pAtm <- unlist(lapply(ips, function(x) x[['barometricPressure']])) - 25
         if (!is.null(input$select)) {
             if (input$select == 1) {
-                if (input$mc == "All") {
-                    mcplot(mc, input$field)
-                } else {
-                    mcplot(mc[[whichmc(input$mc)]], input$field)
-                }
+                mcplot(mc[whichmc(input$mc)], input$field)
             } else if (input$select == 2) {
                 if (is.null(state$xlim)) {
                     imagep(time, freq, spec, ylab='Frequency [Hz]', col=oceColorsViridis,
@@ -129,12 +128,23 @@ shinyServer(function(input, output) {
         meanDraft <- unlist(lapply(ips, function(x) x[['meanDraft']]))
         pAtm <- unlist(lapply(ips, function(x) x[['barometricPressure']])) - 25
         if (input$select == 1) {
-            ## plot(0:1, 0:1, xlab="", ylab="", axes=FALSE, type="n")
-            if (is.null(state$brushed)) {
-                mcplot(mc[[whichmc(input$mc)]], "T/S")
+            if (input$mc == "All") {
+                mcplot(mc, "T/S")
             } else {
-                tmp <- subset(mc[[whichmc(input$mc)]], state$brushed)
-                plotTS(tmp)
+                if (is.null(state$brushed)) {
+                    mcplot(mc, col='lightgrey', "T/S")
+                    mcplot(mc[whichmc(input$mc)], "T/S", col=2, add=TRUE)
+                } else {
+                    mcplot(mc, col='lightgrey', "T/S")
+                    if (input$mc == "All") {
+                        for (i in 1:length(mc)) {
+                            tmp <- list(subset(mc[[i]], state$brushed))
+                        }
+                    } else {
+                        tmp <- list(subset(mc[[whichmc(input$mc)]], state$brushed))
+                        mcplot(tmp, "T/S", col=2, add=TRUE)
+                    }
+                }
             }
         } else if (input$select == 2) {
             if (is.null(state$which)) {
@@ -185,11 +195,11 @@ shinyServer(function(input, output) {
     observeEvent(input$plot_brush, {
         if (input$select == 1) {
             if (input$mc == "All") {
-                mcplot(mc, input$field)
+                state$brushed <- NULL
             } else {
                 df <- data.frame(x=mc[[whichmc(input$mc)]][['time']], x=mc[[whichmc(input$mc)]][[input$field]])
+                state$brushed <- brushedPoints(df, input$plot_brush, "x", "y", allRows=TRUE)$selected_
             }
-            state$brushed <- brushedPoints(df, input$plot_brush, "x", "y", allRows=TRUE)$selected_
         } else {
             state$xlim <- c(input$plot_brush$xmin, input$plot_brush$xmax)
         }
