@@ -29,6 +29,9 @@ for (m in inst) {
                                    pressure=list(unit=expression(dbar), scale='')),
                       deploymentType = 'moored')
     mc[[i]] <- oceSetData(mc[[i]], 'salinity', swSCTp(mc[[i]]))
+    ## do some sanity checks on the data
+    mc[[i]][['temperature']][mc[[i]][['temperature']] < -2 | mc[[i]][['temperature']] > 30] <- NA
+    mc[[i]][['salinity']][mc[[i]][['salinity']] < 1 | mc[[i]][['salinity']] > 40] <- NA
     mc[[i]] <- oceSetData(mc[[i]], 'soundSpeed', swSoundSpeed(mc[[i]]))
     if ('oxygen' %in% names(d)) mc[[i]] <- oceSetData(mc[[i]], 'oxygen', d$oxygen)
     time <- as.POSIXct(paste(d$date, d$time), format='%d %b %Y %H:%M:%S', tz='UTC')
