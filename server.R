@@ -1,6 +1,7 @@
 library(shiny)
 library(oce)
 load('mc.rda')
+load('baro.rda')
 load('ips.rda')
 load('icl.rda')
 ipsTime <- numberAsPOSIXct(unlist(lapply(ips, function(x) x[['time']])))
@@ -78,6 +79,7 @@ shinyServer(function(input, output) {
     
     output$plot <- renderPlot({
         load('mc.rda')
+        load('baro.rda')
         load('ips.rda')
         load('icl.rda')
         ipsTime <- numberAsPOSIXct(unlist(lapply(ips, function(x) x[['time']])))
@@ -111,6 +113,15 @@ shinyServer(function(input, output) {
                     grid()
                     legend('topleft', c('Maximum Draft', 'Mean Draft'), pch=c(3, 1))
                     points(ipsTime, meanDraft-pAtm)
+                }
+            } else if (input$select == 4) {
+                if (is.null(state$xlim)) {
+                    oce.plot.ts(baro$time, baro$patm, ylab='Barometric Pressure [kPa]')
+                    grid()
+                } else {
+                    oce.plot.ts(baro$time, baro$patm, ylab='Barometric Pressure [kPa]',
+                                xlim=state$xlim)
+                    grid()
                 }
             }
         } else {
@@ -209,5 +220,8 @@ shinyServer(function(input, output) {
     })
     observeEvent(input$resetips, {
         state$xlim <- range(ipsTime)
+    })
+    observeEvent(input$resetbaro, {
+        state$xlim <- range(baro$time)
     })
 })
