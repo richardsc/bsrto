@@ -6,7 +6,7 @@ load('icl.rda')
 ipsTime <- numberAsPOSIXct(unlist(lapply(ips, function(x) x[['time']])))
 maxDraft <- unlist(lapply(ips, function(x) x[['maxDraft']]))
 meanDraft <- unlist(lapply(ips, function(x) x[['meanDraft']]))
-pAtm <- unlist(lapply(ips, function(x) x[['barometricPressure']])) - 25
+pAtm <- unlist(lapply(ips, function(x) x[['barometricPressure']]))/10
 timelist <- list()
 for (i in seq_along(time)) {
     timelist[[i]] <- i
@@ -83,7 +83,7 @@ shinyServer(function(input, output) {
         ipsTime <- numberAsPOSIXct(unlist(lapply(ips, function(x) x[['time']])))
         maxDraft <- unlist(lapply(ips, function(x) x[['maxDraft']]))
         meanDraft <- unlist(lapply(ips, function(x) x[['meanDraft']]))
-        pAtm <- unlist(lapply(ips, function(x) x[['barometricPressure']])) - 25
+        pAtm <- unlist(lapply(ips, function(x) x[['barometricPressure']]))/10
         if (!is.null(input$select)) {
             if (input$select == 1) {
                 mcplot(mc[whichmc(input$mc)], input$field)
@@ -97,20 +97,20 @@ shinyServer(function(input, output) {
                 }
             } else if (input$select == 3) {
                 if (is.null(state$xlim)) {
-                    oce.plot.ts(ipsTime, maxDraft-pAtm/100, type='b', pch=3,
-                                ylim=c(-1, max(maxDraft-pAtm/100)),
+                    oce.plot.ts(ipsTime, maxDraft-pAtm, type='b', pch=3,
+                                ylim=c(-1, max(maxDraft-pAtm)),
                                 ylab='Ice draft [m]')
                     grid()
                     legend('topleft', c('Maximum Draft', 'Mean Draft'), pch=c(3, 1))
-                    points(ipsTime, meanDraft-pAtm/100)
+                    points(ipsTime, meanDraft-pAtm)
                 } else {
-                    oce.plot.ts(ipsTime, maxDraft-pAtm/100, type='b', pch=3,
+                    oce.plot.ts(ipsTime, maxDraft-pAtm, type='b', pch=3,
                                 ylab='Ice draft [m]',
-                                ylim=c(-1, max(maxDraft-pAtm/100)),
+                                ylim=c(-1, max(maxDraft-pAtm)),
                                 xlim=state$xlim)
                     grid()
                     legend('topleft', c('Maximum Draft', 'Mean Draft'), pch=c(3, 1))
-                    points(ipsTime, meanDraft-pAtm/100)
+                    points(ipsTime, meanDraft-pAtm)
                 }
             }
         } else {
@@ -126,7 +126,7 @@ shinyServer(function(input, output) {
         ipsTime <- numberAsPOSIXct(unlist(lapply(ips, function(x) x[['time']])))
         maxDraft <- unlist(lapply(ips, function(x) x[['maxDraft']]))
         meanDraft <- unlist(lapply(ips, function(x) x[['meanDraft']]))
-        pAtm <- unlist(lapply(ips, function(x) x[['barometricPressure']])) - 25
+        pAtm <- unlist(lapply(ips, function(x) x[['barometricPressure']]))/10
         if (input$select == 1) {
             if (input$mc == "All") {
                 mcplot(mc, "T/S")
@@ -162,22 +162,22 @@ shinyServer(function(input, output) {
             } else {
                 s <- state$whichips
             }
-            hist(ips[[s]]$range-pAtm[s]/100, ips[[s]]$rangeBin-pAtm[s]/100, main='',
+            hist(ips[[s]]$range-pAtm[s], ips[[s]]$rangeBin-pAtm[s], main='',
                  xlab='Ice draft [m]')
             mtext(ipsTime[s], cex=1.75, line=1.4)
             box()
-            abline(v=maxDraft[s] - pAtm[s]/100, col=2, lwd=2)
-            if (maxDraft[s]-pAtm[s]/100 > 12) {
-                mtext(paste0('Maximum Draft: ', format(maxDraft[s]-pAtm[s]/100, digits=4), ' m'),
+            abline(v=maxDraft[s] - pAtm[s], col=2, lwd=2)
+            if (maxDraft[s]-pAtm[s] > 12) {
+                mtext(paste0('Maximum Draft: ', format(maxDraft[s]-pAtm[s], digits=4), ' m'),
                       at=12,
                       cex=2, font=2, col=2, adj=1)
-            } else if (maxDraft[s]-pAtm[s]/100 < 2) {
-                mtext(paste0('Maximum Draft: ', format(maxDraft[s]-pAtm[s]/100, digits=4), ' m'),
-                      at=maxDraft[s]-pAtm[s]/100,
+            } else if (maxDraft[s]-pAtm[s] < 2) {
+                mtext(paste0('Maximum Draft: ', format(maxDraft[s]-pAtm[s], digits=4), ' m'),
+                      at=maxDraft[s]-pAtm[s],
                       cex=2, font=2, col=2, adj=0)
             } else {
-                mtext(paste0('Maximum Draft: ', format(maxDraft[s]-pAtm[s]/100, digits=4), ' m'),
-                      at=maxDraft[s]-pAtm[s]/100,
+                mtext(paste0('Maximum Draft: ', format(maxDraft[s]-pAtm[s], digits=4), ' m'),
+                      at=maxDraft[s]-pAtm[s],
                       cex=2, font=2, col=2, adj=1)
             }
 

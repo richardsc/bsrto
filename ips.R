@@ -5,6 +5,31 @@ datadir <- '/data/archive/barrow/2017/bsrto/ips/'
 
 files <- dir(datadir, full.names = TRUE)
 
+## Notes:
+## 
+## * the latest ips data documentation says that the 4th entry of the
+##   3rd line is barometric pressure, but actually it appears to be
+##   the time-varying density. The barometricPressure has to come from
+##   the shore station barometer (or from another source)
+
+## read in the already-processed shore station barometer:
+load('baro.rda')
+
+### FIXME:
+## One way to deal with the data processing/correction for
+## atmospheric pressure is to do the processing here -- so that no
+## corrections need to be applied downstream (e.g. inside the Shiny
+## app). Fields that need to be corrected for the varying atmospheric pressure are:
+## 
+## * maxDraft
+## * minDraft
+## * meanDraft
+## * range
+## * rangeBin
+## 
+## For now I'll keep the processing simple, and do the corrections in
+## the server.R code for when the plots are actually made
+
 i <- 1
 ips <- list()
 for (file in files) {
@@ -21,7 +46,8 @@ for (file in files) {
     nRanges <- tmp[1]
     nPartialRanges <- tmp[2]
     soundSpeed <- tmp[3]
-    barometricPressure <- tmp[4]
+    ## barometricPressure <- tmp[4]
+    density <- tmp[4]
     gravity <- tmp[5]
     tmp <- as.numeric(unlist(strsplit(d[5], ' ')))
     maxPressure <- tmp[1]
@@ -48,7 +74,16 @@ for (file in files) {
     ## FIXME: not yet including the above/below bin values
     ## correct for patm (should use Hub barometer)
     ## range <- range - barometricPressure/100
+    ##
+    ## determine average barometric pressure for the 6 hour period from the
+    ## shore station barometer
+    II <- time <= baro$time & baro$time <= time + 6*3600
+    barometricPressure <- mean(baro$patm[II], na.rm=TRUE)
+    if (is.nan(barometricPressure)) barometricPressure <- ips[[i-1]]$barometricPressure # take the last value
+    ## correct all the patm dependent fields
+    
     ips[[i]] <- list(time=time, barometricPressure=barometricPressure,
+                     density=density,
                      maxDraft=maxDraft, meanDraft=meanDraft,
                      minDraft=minDraft, sdDraft=sdDraft, maxPressure=maxPressure,
                      minPressure=minPressure, maxTemperature=maxTemperature,
