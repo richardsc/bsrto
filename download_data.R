@@ -69,3 +69,55 @@ for (dir in dirs) {
     }
     i <- i + 1
 }
+
+##-----------------------
+## Separate from the bsrto FTP site we want to download weather data
+## from the Resolute Airport through Environment Canada
+startYear <- 2017
+startMonth <- 8
+endYear <- as.POSIXlt(Sys.time())$year + 1900
+endMonth <- as.POSIXlt(Sys.time())$mon + 1
+
+if (startYear == endYear) {
+    mon <- startMonth:endMonth
+} else {
+    yr <- startYear
+    mon <- startMonth:12
+    while (yr < endYear) {
+        mon <- c(mon, 1:12)
+        yr <- yr + 1
+    }
+    mon <- c(mon, 1:endMonth)
+}
+if (startYear == endYear) {
+    year <- rep(startYear, length(mon))
+} else {
+    yr <- startYear
+    year <- rep(startYear, length(startMonth:12))
+    while (yr < endYear) {
+        year <- c(year, rep(yr, 12))
+        yr <- yr + 1
+    }
+    year <- c(year, rep(endYear, 12))
+}
+
+## Attempt to download the monthly csv files. Note, if a partial month
+## file exists, it won't download, so we need to force it to
+## re-download the current month everytime
+destdir <- paste0(savedir, 'bsrto/met/')
+metdir <- grep(sub('\\/$', '', 'met/'), dir(paste0(savedir, 'bsrto')))
+if (length(metdir) < 1) {
+    system(paste0('mkdir ', savedir, 'bsrto', '/met/'))
+}
+
+cat('* checking met data\n')
+for (i in seq_along(mon)) {
+    download.met(54199, year[i], mon[i], destdir=destdir)
+}
+
+met_files <- dir(destdir, pattern='*.csv')
+## Remove the last file and re-download
+if (length(met_files) > 0) file.remove(paste0(destdir, tail(met_files, 1)))
+for (i in seq_along(mon)) {
+    download.met(54199, year[i], mon[i], destdir=destdir)
+}
