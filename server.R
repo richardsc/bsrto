@@ -1,6 +1,7 @@
 library(shiny)
 library(oce)
 load('mc.rda')
+load('met.rda')
 load('baro.rda')
 load('ips.rda')
 load('icl.rda')
@@ -79,6 +80,7 @@ shinyServer(function(input, output) {
     
     output$plot <- renderPlot({
         load('mc.rda')
+        load('met.rda')
         load('baro.rda')
         load('ips.rda')
         load('icl.rda')
@@ -123,6 +125,15 @@ shinyServer(function(input, output) {
                                 xlim=state$xlim)
                     grid()
                 }
+            } else if (input$select == 5) {
+                if (is.null(state$xlim)) {
+                    oce.plot.ts(met[['time']], met[[input$met]], ylab=input$met)
+                    grid()
+                } else {
+                    oce.plot.ts(met[['time']], met[[input$met]], ylab=input$met,
+                                xlim=state$xlim)
+                    grid()
+                }
             }
         } else {
             plot(0:1, 0:1, xlab="", ylab="", axes=FALSE, type="n")
@@ -132,6 +143,8 @@ shinyServer(function(input, output) {
 
     output$plot2 <- renderPlot( {
         load('mc.rda')
+        load('met.rda')
+        load('baro.rda')
         load('ips.rda')
         load('icl.rda')
         ipsTime <- numberAsPOSIXct(unlist(lapply(ips, function(x) x[['time']])))
@@ -223,5 +236,8 @@ shinyServer(function(input, output) {
     })
     observeEvent(input$resetbaro, {
         state$xlim <- range(baro$time)
+    })
+    observeEvent(input$resetmet, {
+        state$xlim <- range(met[['time']])
     })
 })
