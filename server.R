@@ -127,12 +127,50 @@ shinyServer(function(input, output) {
                 }
             } else if (input$select == 5) {
                 if (is.null(state$xlim)) {
-                    oce.plot.ts(met[['time']], met[[input$met]], ylab=input$met)
-                    grid()
+                    if (input$met == "stickPlot") {
+                        II <- seq(1, length(met[['time']]), 2)
+                        plotSticks(met[['time']][II], 0,
+                                   lowpass(met[['u']], n=15)[II],
+                                   lowpass(met[['v']], n=15)[II],
+                                   yscale=20,
+                                   yaxt='n')
+                        oce.axis.POSIXct(1)
+                        grid()
+                        arrows(par('usr')[1] + 0.05*(diff(par('usr')[1:2])),
+                               -1,
+                               par('usr')[1] + 0.05*(diff(par('usr')[1:2])),
+                               -1 + 10/20,
+                               len=1/20, col=2, lwd=2)
+                        text(par('usr')[1] + 0.05*(diff(par('usr')[1:2])), -1 + 0.5*10/20,
+                             ' 10 m/s', col=2, adj=0)
+                    } else {
+                        oce.plot.ts(met[['time']], met[[input$met]],
+                                    ylab=met[['units']][[input$met]]$unit)
+                        grid()
+                    }
                 } else {
-                    oce.plot.ts(met[['time']], met[[input$met]], ylab=input$met,
-                                xlim=state$xlim)
-                    grid()
+                    if (input$met == "stickPlot") {
+                        plotSticks(met[['time']], 0,
+                                   lowpass(met[['u']], n=15),
+                                   lowpass(met[['v']], n=15),
+                                   yscale=20,
+                                   yaxt='n',
+                                   xlim=state$xlim)
+                        oce.axis.POSIXct(1)
+                        grid()
+                        arrows(par('usr')[1] + 0.05*(diff(par('usr')[1:2])),
+                               -1,
+                               par('usr')[1] + 0.05*(diff(par('usr')[1:2])),
+                               -1 + 10/20,
+                               len=1/20, col=2, lwd=2)
+                        text(par('usr')[1] + 0.05*(diff(par('usr')[1:2])), -1 + 0.5*10/20,
+                             ' 10 m/s', col=2, adj=0)
+                    } else {
+                        oce.plot.ts(met[['time']], met[[input$met]],
+                                    ylab=met[['units']][[input$met]]$unit,
+                                    xlim=state$xlim)
+                        grid()
+                    }
                 }
             }
         } else {
