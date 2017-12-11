@@ -126,6 +126,11 @@ shinyServer(function(input, output) {
                     grid()
                 }
             } else if (input$select == 5) {
+                if (input$met == 'humidity') {
+                    ylim <- c(0, 100)
+                } else {
+                    ylim <- range(met[[input$met]], na.rm=TRUE)
+                }
                 if (is.null(state$xlim)) {
                     if (input$met == "stickPlot") {
                         II <- seq(1, length(met[['time']]), 2)
@@ -145,7 +150,8 @@ shinyServer(function(input, output) {
                              ' 10 m/s', col=2, adj=0)
                     } else {
                         oce.plot.ts(met[['time']], met[[input$met]],
-                                    ylab=met[['units']][[input$met]]$unit)
+                                    ylab=met[['units']][[input$met]]$unit,
+                                    ylim=ylim)
                         grid()
                     }
                 } else {
@@ -168,7 +174,7 @@ shinyServer(function(input, output) {
                     } else {
                         oce.plot.ts(met[['time']], met[[input$met]],
                                     ylab=met[['units']][[input$met]]$unit,
-                                    xlim=state$xlim)
+                                    xlim=state$xlim, ylim=ylim)
                         grid()
                     }
                 }

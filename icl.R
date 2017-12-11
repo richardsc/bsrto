@@ -36,9 +36,14 @@ if (run) {
         d <- read.delim(files[i], stringsAsFactors=FALSE, skip=29)
         dd <- d[,7:416]
         s <- as.matrix(dd)
+        if (is.character(s)) {
+            s <- matrix(abs(rnorm(s, sd=1e-6)), nrow=dim(s)[1])
+            warning(paste('Corrupt spectrum detected on', time[i]))
+        }
         savg <- apply(s, 2, mean, na.rm=TRUE)
         spec <- rbind(spec, savg)
-        t <- as.POSIXct(paste0(startdate, d$Time), tz='UTC')
+        ##t <- as.POSIXct(paste0(startdate, d$Time), tz='UTC')
+        t <- time[i] + seq(0, length(d$Time))
         tn <- as.numeric(t) - as.numeric(t)[1]
         freq <- as.numeric(gsub('X', '', names(dd)))
         if (!interactive()) png(paste0('icl/icl-', sprintf('%04d', i), '.png'))
