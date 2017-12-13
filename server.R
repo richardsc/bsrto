@@ -126,6 +126,8 @@ shinyServer(function(input, output) {
                     grid()
                 }
             } else if (input$select == 5) {
+                cm <- colormap(met[['speed']], col=oceColorsViridis,
+                               zlim=c(0, max(met[['speed']], na.rm=TRUE)))
                 if (input$met == 'humidity') {
                     ylim <- c(0, 100)
                 } else {
@@ -134,11 +136,12 @@ shinyServer(function(input, output) {
                 if (is.null(state$xlim)) {
                     if (input$met == "stickPlot") {
                         II <- seq(1, length(met[['time']]), 2)
+                        drawPalette(colormap=cm)
                         plotSticks(met[['time']][II], 0,
                                    lowpass(met[['u']], n=15)[II],
                                    lowpass(met[['v']], n=15)[II],
                                    yscale=20,
-                                   yaxt='n')
+                                   yaxt='n', col=cm$zcol[II])
                         oce.axis.POSIXct(1)
                         grid()
                         arrows(par('usr')[1] + 0.05*(diff(par('usr')[1:2])),
@@ -161,7 +164,8 @@ shinyServer(function(input, output) {
                                    lowpass(met[['v']], n=15),
                                    yscale=20,
                                    yaxt='n',
-                                   xlim=state$xlim)
+                                   xlim=state$xlim,
+                                   col=cm$zcol)
                         oce.axis.POSIXct(1)
                         grid()
                         arrows(par('usr')[1] + 0.05*(diff(par('usr')[1:2])),
