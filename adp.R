@@ -35,4 +35,42 @@ for (i in seq_along(t)) {
     hh[i] <- pch[II]
 }
 
+## correct for magnetic declination
+lon <- -91.25105
+lat <- 74.60635
+dec <- magneticField(rep(lon, length(t)), rep(lat, length(t)), t)
+hh <- hh + dec$declination
+
+## replace the ADCP compass with the pole compass, corrected for the
+## 45 degree alignment of beam 3
+adp[['headingOriginal']] <- adp[['heading']]
+adp[['heading']] <- hh + 45
+
+## trim bins that are less than 15% of the range to the surface
+## (FIXME: not trimming for ice yet)
+adp <- subset(adp, distance < max(adp[['pressure']], na.rm=TRUE))
+mask <- array(1, dim=c(length(adp[['time']]), length(adp[['distance']])))
+for (i in 1:4) {
+    for (j in seq_along(adp[['time']])) {
+        II <- adp[['distance']] > adp[['pressure']][j]*0.85
+        mask[j, II] <- NA
+    }
+    adp[['v']][,,i] <- adp[['v']][,,i]*mask
+}
+
+## If any bins have less than 50% data coverage, just NA them
+remove <- NULL
+for (j in seq_along(adp[['distance']])) {
+    remove <- c(remove,
+                ifelse(sum(is.na(adp[['v']][,j,1])) > 0.5*length(adp[['time']]),
+                       TRUE, FALSE))
+}
+
+adp <- subset(adp, distance %in% distance[!remove])
+
+## convert to ENU coordinates
+enu <- toEnu(adp)
+enu <- oceSetData(enu, 've', apply(enu[['v']][,,1], 1, mean, na.rm=TRUE))
+enu <- oceSetData(enu, 'vn', apply(enu[['v']][,,2], 1, mean, na.rm=TRUE))
+
 save(file='adp.rda', adp)
