@@ -126,7 +126,7 @@ shinyServer(function(input, output) {
                     grid()
                 }
             } else if (input$select == 5) {
-                cm <- colormap(met[['speed']], col=oceColorsViridis,
+                cm <- colormap(lowpass(met[['speed']], n=15), col=oceColorsViridis,
                                zlim=c(0, max(met[['speed']], na.rm=TRUE)))
                 if (input$met == 'humidity') {
                     ylim <- c(0, 100)
