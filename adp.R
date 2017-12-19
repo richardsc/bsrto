@@ -73,4 +73,4 @@ enu <- toEnu(adp)
 enu <- oceSetData(enu, 've', apply(enu[['v']][,,1], 1, mean, na.rm=TRUE))
 enu <- oceSetData(enu, 'vn', apply(enu[['v']][,,2], 1, mean, na.rm=TRUE))
 
-save(file='adp.rda', adp)
+save(file='adp.rda', adp, enu)
