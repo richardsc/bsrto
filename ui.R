@@ -17,6 +17,10 @@ shinyUI(fluidPage(titlePanel('BSRTO data browser'),
                           radioButtons("field", "Parameter", c("temperature", "salinity", "pressure", "oxygen", "T/S"),
                                        selected="temperature")),
                       conditionalPanel(
+                          condition = "input.select == 4",
+                          radioButtons("baro", "Field", c("pressure", "temperature"),
+                                       selected = "pressure")),
+                      conditionalPanel(
                           condition = "input.select == 5",
                           radioButtons("met", "Field", c("temperature", "pressure",
                                                          "u", "v", "stickPlot",

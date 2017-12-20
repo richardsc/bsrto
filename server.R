@@ -118,11 +118,20 @@ shinyServer(function(input, output) {
                 }
             } else if (input$select == 4) {
                 if (is.null(state$xlim)) {
-                    oce.plot.ts(baro$time, baro$patm, ylab='Barometric Pressure [kPa]')
+                    if (input$baro == "pressure") {
+                        oce.plot.ts(baro$time, baro$patm, ylab='Barometric Pressure [kPa]')
+                    } else if (input$baro == "temperature") {
+                        oce.plot.ts(baro$time, baro$Tatm, ylab='HUB temperature')
+                    }
                     grid()
                 } else {
-                    oce.plot.ts(baro$time, baro$patm, ylab='Barometric Pressure [kPa]',
-                                xlim=state$xlim)
+                    if (input$baro == "pressure") {
+                        oce.plot.ts(baro$time, baro$patm, ylab='Barometric Pressure [kPa]',
+                                    xlim=state$xlim)
+                    } else if (input$baro == "temperature") {
+                        oce.plot.ts(baro$time, baro$Tatm, ylab='HUB temperature',
+                                    xlim=state$xlim)
+                    }
                     grid()
                 }
             } else if (input$select == 5) {
