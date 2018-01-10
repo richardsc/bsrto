@@ -14,6 +14,16 @@ i <- 1
 mc <- list()
 for (m in inst) {
     system(paste0('cat ', datadir, m, '/* > ', m, '.mc'))
+
+    ## sometimes garbage characters get inserted at the beginning of
+    ## the line for the imm microcat (see Dec 29 2017 and Jan 4
+    ## 2018). To guard against this we run the file through a system
+    ## `tr` command
+    if (m == 'imm') {
+        system("tr -cd '\11\12\15\40-\176' < imm.mc > imm_clean.mc")
+        system("mv imm.mc imm_old.mc")
+        system("mv imm_clean.mc imm.mc")
+    }
     dd <- read.csv(paste0(m, '.mc'), col.names=mc_names[[i]], stringsAsFactors=FALSE)
     time <- as.POSIXct(paste(dd$date, dd$time), format='%d %b %Y %H:%M:%S', tz='UTC')
     ## any with messed up times? (e.g. sample 544 from imm)
