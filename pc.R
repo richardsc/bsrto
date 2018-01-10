@@ -13,7 +13,13 @@ for (file in files) {
     l <- scan(con, character(), quiet=TRUE)
     close(con)
     if (length(l) > 5) { # must be at least 3 samples in the file
-        startTime <- as.POSIXct(paste(l[1], l[2]), format='%m/%d/%Y %H:%M:%S', tz='UTC')
+        startTime <- try(as.POSIXct(paste(l[1], l[2]), format='%m/%d/%Y %H:%M:%S', tz='UTC'),
+                         silent=TRUE)
+        if (inherits(startTime, 'try-error') {
+            ## try to guess the start time from the filename
+            date <- strsplit(tail(unlist(strsplit(file, '/')), 1), '.', fixed=TRUE)[[1]][1]
+            startTime <- as.POSIXct(date, format='%y%m%d%H', tz='UTC')
+        }
         h <- try(read.csv(text=l[3:length(l)], header=FALSE, stringsAsFactors=FALSE)[,2], silent=TRUE)
         if (inherits(h, 'try-error')) {
             pc[[i]] <- NULL
