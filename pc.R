@@ -26,15 +26,21 @@ for (file in files) {
         } else {
             ## Sometimes there are headings that are exactly 0.0. For now
             ## let's just trim them out assuming they are erroneous.
-            h <- as.numeric(h)
+            ok <- !is.na(h)
+            h <- as.numeric(h[ok])
             h <- h[!(h==0)]
             sampleTime <- startTime + seq(0, length(h)-1)
             tn <- as.numeric(sampleTime) - as.numeric(sampleTime)[1]
-            m <- lm(h ~ tn)
-            p <- summary(m)$coefficients[,4][[2]]
-            pc[[i]] <- list(startTime=startTime, time=sampleTime, heading=h,
-                            meanHeading=mean(h, na.rm=TRUE), sdHeading=sd(h, na.rm=TRUE),
-                            trend=coef(m)[[2]], p=p)
+            if (length(h) > 1) {
+                m <- lm(h ~ tn)
+                p <- summary(m)$coefficients[,4][[2]]
+                pc[[i]] <- list(startTime=startTime, time=sampleTime, heading=h,
+                                meanHeading=mean(h, na.rm=TRUE), sdHeading=sd(h, na.rm=TRUE),
+                                trend=coef(m)[[2]], p=p)
+            } else {
+                pc[[i]] <- list(startTime=startTime, time=sampleTime, heading=h,
+                                meanHeading=mean(h, na.rm=TRUE), sdHeading=sd(h, na.rm=TRUE))
+            }
         }
     } else {
         pc[[i]] <- NULL
