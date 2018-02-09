@@ -5,6 +5,7 @@ load('met.rda')
 load('baro.rda')
 load('ips.rda')
 load('icl.rda')
+load('adp.rda')
 ipsTime <- numberAsPOSIXct(unlist(lapply(ips, function(x) x[['time']])))
 maxDraft <- unlist(lapply(ips, function(x) x[['maxDraft']]))
 meanDraft <- unlist(lapply(ips, function(x) x[['meanDraft']]))
@@ -84,6 +85,7 @@ shinyServer(function(input, output) {
         load('baro.rda')
         load('ips.rda')
         load('icl.rda')
+        load('adp.rda')
         ipsTime <- numberAsPOSIXct(unlist(lapply(ips, function(x) x[['time']])))
         maxDraft <- unlist(lapply(ips, function(x) x[['maxDraft']]))
         meanDraft <- unlist(lapply(ips, function(x) x[['meanDraft']]))
@@ -118,6 +120,54 @@ shinyServer(function(input, output) {
                 }
             } else if (input$select == 4) {
                 if (is.null(state$xlim)) {
+                    if (input$adp == "U") {
+                        plot(enu, which=1)
+                    } else if (input$adp == "V") {
+                        plot(enu, which=2)
+                    } else if (input$adp == "depth-averaged U") {
+                        plot(enu, which=19)
+                    } else if (input$adp == "depth-averaged V") {
+                        plot(enu, which=20)
+                    } else if (input$adp == "backscatter1") {
+                        plot(enu, which=5)
+                    } else if (input$adp == "backscatter2") {
+                        plot(enu, which=6)
+                    } else if (input$adp == "backscatter3") {
+                        plot(enu, which=7)
+                    } else if (input$adp == "backscatter4") {
+                        plot(enu, which=8)
+                    } else if (input$adp == "average backscatter") {
+                        bsavg <- apply(beamUnspreadAdp(enu)[['a', 'numeric']], 1, mean, na.rm=TRUE)
+                        oce.plot.ts(enu[['time']], bsavg, ylab='Average backscatter')
+                    } else {
+                        plot(enu, which=input$adp)
+                    }
+                } else {
+                    if (input$adp == "U") {
+                        plot(enu, which=1, xlim=state$xlim)
+                    } else if (input$adp == "V") {
+                        plot(enu, which=2, xlim=state$xlim)
+                    } else if (input$adp == "depth-averaged U") {
+                        plot(enu, which=19, xlim=state$xlim)
+                    } else if (input$adp == "depth-averaged V") {
+                        plot(enu, which=20, xlim=state$xlim)
+                    } else if (input$adp == "backscatter1") {
+                        plot(enu, which=5, xlim=state$xlim)
+                    } else if (input$adp == "backscatter2") {
+                        plot(enu, which=6, xlim=state$xlim)
+                    } else if (input$adp == "backscatter3") {
+                        plot(enu, which=7, xlim=state$xlim)
+                    } else if (input$adp == "backscatter4") {
+                        plot(enu, which=8, xlim=state$xlim)
+                    } else if (input$adp == "average backscatter") {
+                        bsavg <- apply(beamUnspreadAdp(enu)[['a', 'numeric']], 1, mean, na.rm=TRUE)
+                        oce.plot.ts(enu[['time']], bsavg, ylab='Average backscatter', xlim=state$xlim)
+                    } else {
+                        plot(enu, which=input$adp, xlim=state$xlim)
+                    }
+                }
+            } else if (input$select == 5) {
+                if (is.null(state$xlim)) {
                     if (input$baro == "pressure") {
                         oce.plot.ts(baro$time, baro$patm, ylab='Barometric Pressure [kPa]')
                     } else if (input$baro == "temperature") {
@@ -134,7 +184,7 @@ shinyServer(function(input, output) {
                     }
                     grid()
                 }
-            } else if (input$select == 5) {
+            } else if (input$select == 6) {
                 cm <- colormap(lowpass(met[['speed']], n=15), col=oceColorsViridis,
                                zlim=c(0, max(met[['speed']], na.rm=TRUE)))
                 if (input$met == 'humidity') {
@@ -204,6 +254,7 @@ shinyServer(function(input, output) {
         load('baro.rda')
         load('ips.rda')
         load('icl.rda')
+        load('adp.rda')
         ipsTime <- numberAsPOSIXct(unlist(lapply(ips, function(x) x[['time']])))
         maxDraft <- unlist(lapply(ips, function(x) x[['maxDraft']]))
         meanDraft <- unlist(lapply(ips, function(x) x[['meanDraft']]))
@@ -290,6 +341,9 @@ shinyServer(function(input, output) {
     })
     observeEvent(input$resetips, {
         state$xlim <- range(ipsTime)
+    })
+    observeEvent(input$resetadp, {
+        state$xlim <- range(enu[['time']])
     })
     observeEvent(input$resetbaro, {
         state$xlim <- range(baro$time)
