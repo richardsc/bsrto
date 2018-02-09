@@ -17,6 +17,14 @@ findNearest <- function(x, value, na.val=-9999) {
 dir <- '/data/archive/barrow/2017/bsrto/rdi/'
 
 ## Cat all the files together to make one complete one
+## Need to check to only include files that have 741 bytes (complete ensemble)
+files <- list.files('/data/archive/barrow/2017/bsrto/rdi', full.names=TRUE, pattern='*.rdi')
+size <- file.info(files)$size
+wrongSize <- which(size != 741)
+for (i in wrongSize) {
+    system(paste0('rm ', files[i]))
+}
+cat('* Removed', length(wrongSize), 'bad RDI files\n')
 system('cat /data/archive/barrow/2017/bsrto/rdi/*.rdi > adp.000')
 
 adp <- read.oce('adp.000')
