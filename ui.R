@@ -10,6 +10,12 @@ shinyUI(fluidPage(titlePanel('BSRTO data browser'),
                                                  "Shore Station barometer" = 5,
                                                  "Resolute weather data" = 6), selected = 1),
                       conditionalPanel(
+                          condition = "input.select == 2 | input.select == 3",
+                          h4("Click/Drag top panel to zoom. Double click to select a time")),
+                      conditionalPanel(
+                          condition = "input.select == 4 | input.select == 5 | input.select == 6",
+                          h4("Click/Drag top panel to zoom.")),
+                      conditionalPanel(
                           condition = "input.select == 1",
                           radioButtons("mc", "Instrument Depth", c("40m", "60m", "80m", "160m", "All"),
                                        selected = "40m")),
@@ -19,8 +25,12 @@ shinyUI(fluidPage(titlePanel('BSRTO data browser'),
                                        selected="temperature")),
                       conditionalPanel(
                           condition = "input.select == 4",
-                          radioButtons("adp", "Parameter", c("depth-averaged U", "depth-averaged V", "U", "V", "backscatter1", "backscatter2", "backscatter3", "backscatter4", "average backscatter", "pitch", "roll"),
+                          radioButtons("adp", "Field (top)", c("depth-averaged U", "depth-averaged V", "U", "V", "backscatter1", "backscatter2", "backscatter3", "backscatter4", "average backscatter", "pitch", "roll", "bottomRange1", "bottomRange2", "bottomRange3", "bottomRange4", "bottomVelocity1", "bottomVelocity2", "bottomVelocity3", "bottomVelocity4"),
                                        selected = "depth-averaged U")),
+                      conditionalPanel(
+                          condition = "input.select == 4",
+                          radioButtons("adp2", "Field (bottom)", c("depth-averaged U", "depth-averaged V", "U", "V", "backscatter1", "backscatter2", "backscatter3", "backscatter4", "average backscatter", "pitch", "roll"),
+                                       selected = "depth-averaged V")),
                       conditionalPanel(
                           condition = "input.select == 5",
                           radioButtons("baro", "Field", c("pressure", "temperature"),
@@ -32,12 +42,6 @@ shinyUI(fluidPage(titlePanel('BSRTO data browser'),
                                                          "speed", "direction",
                                                          "dewPoint", "humidity"),
                                        selected = "temperature")),
-                      conditionalPanel(
-                          condition = "input.select == 2 | input.select == 3",
-                          h4("Click/Drag top panel to zoom. Double click to select a time")),
-                      conditionalPanel(
-                          condition = "input.select == 4 | input.select == 5 | input.select == 6",
-                          h4("Click/Drag top panel to zoom.")),
                       conditionalPanel(
                           condition = "input.select == 2",
                           actionButton("reseticl", "Reset axis")),

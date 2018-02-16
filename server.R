@@ -312,7 +312,54 @@ shinyServer(function(input, output) {
                       at=maxDraft[s]-pAtm[s],
                       cex=2, font=2, col=2, adj=1)
             }
-
+        } else if (input$select == 4) {
+            if (is.null(state$xlim)) {
+                if (input$adp2 == "U") {
+                    plot(enu, which=1)
+                } else if (input$adp2 == "V") {
+                    plot(enu, which=2)
+                } else if (input$adp2 == "depth-averaged U") {
+                    plot(enu, which=19)
+                } else if (input$adp2 == "depth-averaged V") {
+                    plot(enu, which=20)
+                } else if (input$adp2 == "backscatter1") {
+                    plot(enu, which=5)
+                } else if (input$adp2 == "backscatter2") {
+                    plot(enu, which=6)
+                } else if (input$adp2 == "backscatter3") {
+                    plot(enu, which=7)
+                } else if (input$adp2 == "backscatter4") {
+                    plot(enu, which=8)
+                } else if (input$adp2 == "average backscatter") {
+                    bsavg <- apply(beamUnspreadAdp(enu)[['a', 'numeric']], 1, mean, na.rm=TRUE)
+                    oce.plot.ts(enu[['time']], bsavg, ylab='Average backscatter')
+                } else {
+                    plot(enu, which=input$adp2)
+                }
+            } else {
+                if (input$adp2 == "U") {
+                    plot(enu, which=1, xlim=state$xlim)
+                } else if (input$adp2 == "V") {
+                    plot(enu, which=2, xlim=state$xlim)
+                } else if (input$adp2 == "depth-averaged U") {
+                    plot(enu, which=19, xlim=state$xlim)
+                } else if (input$adp2 == "depth-averaged V") {
+                    plot(enu, which=20, xlim=state$xlim)
+                } else if (input$adp2 == "backscatter1") {
+                    plot(enu, which=5, xlim=state$xlim)
+                } else if (input$adp2 == "backscatter2") {
+                    plot(enu, which=6, xlim=state$xlim)
+                } else if (input$adp2 == "backscatter3") {
+                    plot(enu, which=7, xlim=state$xlim)
+                } else if (input$adp2 == "backscatter4") {
+                    plot(enu, which=8, xlim=state$xlim)
+                } else if (input$adp2 == "average backscatter") {
+                    bsavg <- apply(beamUnspreadAdp(enu)[['a', 'numeric']], 1, mean, na.rm=TRUE)
+                    oce.plot.ts(enu[['time']], bsavg, ylab='Average backscatter', xlim=state$xlim)
+                } else {
+                    plot(enu, which=input$adp2, xlim=state$xlim)
+                }
+            }
         }
     }
     )
