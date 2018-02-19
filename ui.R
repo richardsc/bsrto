@@ -10,6 +10,21 @@ shinyUI(fluidPage(titlePanel('BSRTO data browser'),
                                                  "Shore Station barometer" = 5,
                                                  "Resolute weather data" = 6), selected = 1),
                       conditionalPanel(
+                          condition = "input.select == 2",
+                          actionButton("reseticl", "Reset axis")),
+                      conditionalPanel(
+                          condition = "input.select == 3",
+                          actionButton("resetips", "Reset axis")),
+                      conditionalPanel(
+                          condition = "input.select == 4",
+                          actionButton("resetadp", "Reset axis")),
+                      conditionalPanel(
+                          condition = "input.select == 5",
+                          actionButton("resetbaro", "Reset axis")),
+                      conditionalPanel(
+                          condition = "input.select == 6",
+                          actionButton("resetmet", "Reset axis")),
+                      conditionalPanel(
                           condition = "input.select == 2 | input.select == 3",
                           h4("Click/Drag top panel to zoom. Double click to select a time")),
                       conditionalPanel(
@@ -41,22 +56,7 @@ shinyUI(fluidPage(titlePanel('BSRTO data browser'),
                                                          "u", "v", "stickPlot",
                                                          "speed", "direction",
                                                          "dewPoint", "humidity"),
-                                       selected = "temperature")),
-                      conditionalPanel(
-                          condition = "input.select == 2",
-                          actionButton("reseticl", "Reset axis")),
-                      conditionalPanel(
-                          condition = "input.select == 3",
-                          actionButton("resetips", "Reset axis")),
-                      conditionalPanel(
-                          condition = "input.select == 4",
-                          actionButton("resetadp", "Reset axis")),
-                      conditionalPanel(
-                          condition = "input.select == 5",
-                          actionButton("resetbaro", "Reset axis")),
-                      conditionalPanel(
-                          condition = "input.select == 6",
-                          actionButton("resetmet", "Reset axis"))),
+                                       selected = "temperature"))),
                       mainPanel(fluidRow(plotOutput("plot", dblclick="plot_click",
                                                     brush = brushOpts(id="plot_brush",
                                                                       direction="x",
