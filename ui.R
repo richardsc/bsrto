@@ -29,7 +29,7 @@ shinyUI(fluidPage(titlePanel('BSRTO data browser'),
                                        selected = "depth-averaged U")),
                       conditionalPanel(
                           condition = "input.select == 4",
-                          radioButtons("adp2", "Field (bottom)", c("depth-averaged U", "depth-averaged V", "U", "V", "backscatter1", "backscatter2", "backscatter3", "backscatter4", "average backscatter", "pitch", "roll"),
+                          radioButtons("adp2", "Field (top)", c("depth-averaged U", "depth-averaged V", "U", "V", "backscatter1", "backscatter2", "backscatter3", "backscatter4", "average backscatter", "pitch", "roll", "bottomRange1", "bottomRange2", "bottomRange3", "bottomRange4", "bottomVelocity1", "bottomVelocity2", "bottomVelocity3", "bottomVelocity4"),
                                        selected = "depth-averaged V")),
                       conditionalPanel(
                           condition = "input.select == 5",
