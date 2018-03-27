@@ -61,35 +61,37 @@ for (file in files) {
     maxPitchRoll <- tmp[4]
     maxInclination <- tmp[5]
     bins <- as.numeric(unlist(strsplit(d[7], ',')))
-    minRange <- 9
-    maxRange <- 22
-    dRange <- 0.1
-    rangeBin <- seq(9, 22-dRange, dRange)
-    rangeHist <- bins[1:130]
-    ## construct a time series according to the ranges
-    range <- NULL
-    for (ii in seq_along(rangeHist)) {
-        range <- c(range, rep(rangeBin[ii], rangeHist[ii]))
+    if (!any(is.na(bins))) {
+        minRange <- 9
+        maxRange <- 22
+        dRange <- 0.1
+        rangeBin <- seq(9, 22-dRange, dRange)
+        rangeHist <- bins[1:130]
+        ## construct a time series according to the ranges
+        range <- NULL
+        for (ii in seq_along(rangeHist)) {
+            range <- c(range, rep(rangeBin[ii], rangeHist[ii]))
+        }
+        ## FIXME: not yet including the above/below bin values
+        ## correct for patm (should use Hub barometer)
+        ## range <- range - barometricPressure/100
+        ##
+        ## determine average barometric pressure for the 6 hour period from the
+        ## shore station barometer
+        II <- time <= baro$time & baro$time <= time + 6*3600
+        barometricPressure <- mean(baro$patm[II], na.rm=TRUE)
+        if (is.nan(barometricPressure)) barometricPressure <- ips[[i-1]]$barometricPressure # take the last value
+        ## correct all the patm dependent fields
+        
+        ips[[i]] <- list(time=time, barometricPressure=barometricPressure,
+                         density=density,
+                         maxDraft=maxDraft, meanDraft=meanDraft,
+                         minDraft=minDraft, sdDraft=sdDraft, maxPressure=maxPressure,
+                         minPressure=minPressure, maxTemperature=maxTemperature,
+                         minTemperature=minTemperature, maxPitch=maxPitch, maxRoll=maxRoll,
+                         maxRollPitch=maxRollPitch, maxPitchRoll=maxPitchRoll,
+                         rangeBin=rangeBin, rangeHist=rangeHist, range=range)
     }
-    ## FIXME: not yet including the above/below bin values
-    ## correct for patm (should use Hub barometer)
-    ## range <- range - barometricPressure/100
-    ##
-    ## determine average barometric pressure for the 6 hour period from the
-    ## shore station barometer
-    II <- time <= baro$time & baro$time <= time + 6*3600
-    barometricPressure <- mean(baro$patm[II], na.rm=TRUE)
-    if (is.nan(barometricPressure)) barometricPressure <- ips[[i-1]]$barometricPressure # take the last value
-    ## correct all the patm dependent fields
-    
-    ips[[i]] <- list(time=time, barometricPressure=barometricPressure,
-                     density=density,
-                     maxDraft=maxDraft, meanDraft=meanDraft,
-                     minDraft=minDraft, sdDraft=sdDraft, maxPressure=maxPressure,
-                     minPressure=minPressure, maxTemperature=maxTemperature,
-                     minTemperature=minTemperature, maxPitch=maxPitch, maxRoll=maxRoll,
-                     maxRollPitch=maxRollPitch, maxPitchRoll=maxPitchRoll,
-                     rangeBin=rangeBin, rangeHist=rangeHist, range=range)
     i <- i + 1
 }
 save(file='ips.rda', ips)
