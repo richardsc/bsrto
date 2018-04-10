@@ -10,6 +10,9 @@ shinyUI(fluidPage(titlePanel('BSRTO data browser'),
                                                  "Shore Station barometer" = 5,
                                                  "Resolute weather data" = 6), selected = 1),
                       conditionalPanel(
+                          condition = "input.select == 1",
+                          actionButton("resetmc", "Reset axis")),
+                      conditionalPanel(
                           condition = "input.select == 2",
                           actionButton("reseticl", "Reset axis")),
                       conditionalPanel(

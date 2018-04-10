@@ -16,8 +16,9 @@ for (i in seq_along(time)) {
 }
 names(timelist) <- format(time)
 
-mcplot <- function(x, field, pch=21, col, add=FALSE) {
+mcplot <- function(x, field, xlim, pch=21, col, add=FALSE) {
     if (length(x) > 1) {
+        if (missing(xlim)) xlim <- range(x[[1]][['time']])
         if (field == "T/S") {
             Srange <- range(unlist(lapply(x, function(x) x[['salinity']])), na.rm=TRUE)
             Trange <- range(unlist(lapply(x, function(x) x[['temperature']])), na.rm=TRUE)
@@ -32,7 +33,7 @@ mcplot <- function(x, field, pch=21, col, add=FALSE) {
             range <- range(unlist(lapply(x, function(x) x[[field]])), na.rm=TRUE)
             for (i in 1:length(x)) {
                 if (i == 1) {
-                    oce.plot.ts(x[[i]][['time']], x[[i]][[field]], ylab=field, ylim=range)
+                    oce.plot.ts(x[[i]][['time']], x[[i]][[field]], ylab=field, ylim=range, xlim=xlim)
                 } else {
                     lines(x[[i]][['time']], x[[i]][[field]], col=ifelse(missing(col), i, col))
                 }
@@ -40,6 +41,7 @@ mcplot <- function(x, field, pch=21, col, add=FALSE) {
         }
     } else {
         x <- x[[1]]
+        if (missing(xlim)) xlim <- range(x[['time']])
         if (field == "T/S") {
             plotTS(x, cex=1.5, pch=pch, pt.bg=ifelse(missing(col), 'lightgrey', col), add=add)
         } else {
@@ -48,7 +50,7 @@ mcplot <- function(x, field, pch=21, col, add=FALSE) {
                 box()
                 text(0.5, 0.5, "No oxygen data available at this depth")
             } else {
-                oce.plot.ts(x[['time']], x[[field]], ylab=field)
+                oce.plot.ts(x[['time']], x[[field]], ylab=field, xlim=xlim)
                 grid()
             }
         }
@@ -92,7 +94,11 @@ shinyServer(function(input, output) {
         pAtm <- unlist(lapply(ips, function(x) x[['barometricPressure']]))/10
         if (!is.null(input$select)) {
             if (input$select == 1) {
-                mcplot(mc[whichmc(input$mc)], input$field)
+                if (is.null(state$xlim)) {
+                    mcplot(mc[whichmc(input$mc)], input$field)
+                } else {
+                    mcplot(mc[whichmc(input$mc)], input$field, xlim=state$xlim)
+                }
             } else if (input$select == 2) {
                 if (is.null(state$xlim)) {
                     imagep(time, freq, spec, ylab='Frequency [Hz]', col=oceColorsViridis,
@@ -379,9 +385,12 @@ shinyServer(function(input, output) {
                 df <- data.frame(x=mc[[whichmc(input$mc)]][['time']], x=mc[[whichmc(input$mc)]][[input$field]])
                 state$brushed <- brushedPoints(df, input$plot_brush, "x", "y", allRows=TRUE)$selected_
             }
-        } else {
-            state$xlim <- c(input$plot_brush$xmin, input$plot_brush$xmax)
-        }
+        }## else {
+        state$xlim <- c(input$plot_brush$xmin, input$plot_brush$xmax)
+        #}
+    })
+    observeEvent(input$resetmc, {
+        state$xlim <- range(time)
     })
     observeEvent(input$reseticl, {
         state$xlim <- range(time)
