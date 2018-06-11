@@ -47,7 +47,7 @@ if (run) {
             savg <- apply(s, 2, mean, na.rm=TRUE)
             spec <- rbind(spec, savg)
             ##t <- as.POSIXct(paste0(startdate, d$Time), tz='UTC')
-            t <- tail(time, 1) + seq(0, length(d$Time))
+            t <- tail(time, 1) + seq(0, length(d$Time)-1)
             tn <- as.numeric(t) - as.numeric(t)[1]
             freq <- as.numeric(gsub('X', '', names(dd)))
             if (!interactive()) png(paste0('icl/icl-', sprintf('%04d', i), '.png'))
@@ -61,11 +61,20 @@ if (run) {
             grid()
             if (!interactive()) dev.off()
             cat('done\n')
-            icl[[i]] <- list(freq=freq, time=t, spec=s)
+            icl <- c(icl, list(freq=freq, time=numberAsPOSIXct(t), spec=s))
             i <- i + 1
         }
     }
     time <- numberAsPOSIXct(time)
 
+    o <- order(time)
+    icl <- icl[o]
+    time <- time[o]
+    spec <- spec[o, ]
+
+    d <- which(diff(time) == 0)
+    icl <- icl[-d]
+    time <- time[-d]
+    spec <- spec[-d, ]
     save(file='icl.rda', icl, spec, time, freq)
 }
