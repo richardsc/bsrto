@@ -25,9 +25,10 @@ if (nimage == 0) {
 }
 
 if (run) {
-    ## for (i in (nimage+1):length(files)) {
-    i <- nimage + 1
-    for (f in files[(nimage+1):length(files)]) {
+    for (i in (nimage+1):length(files)) {
+    ## i <- nimage + 1
+    ## for (f in files[(nimage+1):length(files)]) {
+        f <- files[i]
         cat('* Reading', f, '...')
         con <- file(f)
         h <- readLines(con, 29)
@@ -37,10 +38,15 @@ if (run) {
         d <- read.delim(f, stringsAsFactors=FALSE, skip=29)
         sdim <- c(length(d$Time), 410) # dim is always this size
         dd <- try(d[,7:416], silent=TRUE)
+        if (!interactive()) png(paste0('icl/icl-', sprintf('%04d', i), '.png'))
         if (inherits(dd, 'try-error')) {
             warning(paste('Corrupt spectrum detected on', paste(startdate, starttime)))
+            plot(1, 1, axes=FALSE, xlab='', ylab='', pch=NA)
+            text(1, 1, 'Corrupt spectrum')
         } else if (is.character(as.matrix(dd))) {
             warning(paste('Corrupt spectrum detected on', paste(startdate, starttime)))
+            plot(1, 1, axes=FALSE, xlab='', ylab='', pch=NA)
+            text(1, 1, 'Corrupt spectrum')
         } else {
             time <- c(time, as.POSIXct(paste(startdate, starttime), tz='UTC'))
             s <- as.matrix(dd)
@@ -50,7 +56,6 @@ if (run) {
             t <- tail(time, 1) + seq(0, length(d$Time)-1)
             tn <- as.numeric(t) - as.numeric(t)[1]
             freq <- as.numeric(gsub('X', '', names(dd)))
-            if (!interactive()) png(paste0('icl/icl-', sprintf('%04d', i), '.png'))
             par(mfrow=c(2, 1))
             imagep(tn, freq, s, xlab='Time [s]', ylab='Freq [Hz]', zlim=c(0, 50),
                    zlab=numberAsPOSIXct(time[i]),
@@ -61,8 +66,7 @@ if (run) {
             grid()
             if (!interactive()) dev.off()
             cat('done\n')
-            icl <- c(icl, list(freq=freq, time=numberAsPOSIXct(t), spec=s))
-            i <- i + 1
+            icl[[i]] <- list(freq=freq, time=numberAsPOSIXct(t), spec=s)
         }
     }
     time <- numberAsPOSIXct(time)
@@ -72,9 +76,9 @@ if (run) {
     time <- time[o]
     spec <- spec[o, ]
 
-    d <- which(diff(time) == 0)
-    icl <- icl[-d]
-    time <- time[-d]
-    spec <- spec[-d, ]
+    ## d <- which(diff(time) == 0)
+    ## icl <- icl[-d]
+    ## time <- time[-d]
+    ## spec <- spec[-d, ]
     save(file='icl.rda', icl, spec, time, freq)
 }
