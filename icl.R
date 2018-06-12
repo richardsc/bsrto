@@ -48,7 +48,7 @@ if (run) {
             plot(1, 1, axes=FALSE, xlab='', ylab='', pch=NA)
             text(1, 1, 'Corrupt spectrum')
         } else {
-            time <- c(time, as.POSIXct(paste(startdate, starttime), tz='UTC'))
+            time[i] <- as.POSIXct(paste(startdate, starttime), tz='UTC')
             s <- as.matrix(dd)
             savg <- apply(s, 2, mean, na.rm=TRUE)
             spec <- rbind(spec, savg)
@@ -64,10 +64,10 @@ if (run) {
                     ylab='Spectrum', ylim=c(0, 50))
             lines(freq, savg, lwd=3)    
             grid()
-            if (!interactive()) dev.off()
             cat('done\n')
             icl[[i]] <- list(freq=freq, time=numberAsPOSIXct(t), spec=s)
         }
+        if (!interactive()) dev.off()
     }
     time <- numberAsPOSIXct(time)
 
