@@ -84,12 +84,6 @@ shinyServer(function(input, output) {
     state <- reactiveValues()
     
     output$plot <- renderPlot({
-        load('mc.rda')
-        load('met.rda')
-        load('baro.rda')
-        load('ips.rda')
-        load('icl.rda')
-        load('adp.rda')
         ipsTime <- numberAsPOSIXct(unlist(lapply(ips, function(x) x[['time']])))
         maxDraft <- unlist(lapply(ips, function(x) x[['maxDraft']]))
         meanDraft <- unlist(lapply(ips, function(x) x[['meanDraft']]))
@@ -104,10 +98,10 @@ shinyServer(function(input, output) {
             } else if (input$select == 2) {
                 if (is.null(state$xlim)) {
                     imagep(time, freq, spec, ylab='Frequency [Hz]', col=oceColorsViridis,
-                           zlim=c(0, 40), decimate=FALSE)
+                           zlim=c(0, 100), decimate=FALSE)
                 } else {
                     imagep(time, freq, spec, ylab='Frequency [Hz]', col=oceColorsViridis,
-                           zlim=c(0, 40), xlim=state$xlim, decimate=FALSE)
+                           zlim=c(0, 100), xlim=state$xlim, decimate=FALSE)
                 }
             } else if (input$select == 3) {
                 if (is.null(state$xlim)) {
@@ -257,12 +251,6 @@ shinyServer(function(input, output) {
     })
 
     output$plot2 <- renderPlot( {
-        load('mc.rda')
-        load('met.rda')
-        load('baro.rda')
-        load('ips.rda')
-        load('icl.rda')
-        load('adp.rda')
         ipsTime <- numberAsPOSIXct(unlist(lapply(ips, function(x) x[['time']])))
         maxDraft <- unlist(lapply(ips, function(x) x[['maxDraft']]))
         meanDraft <- unlist(lapply(ips, function(x) x[['meanDraft']]))
@@ -295,7 +283,7 @@ shinyServer(function(input, output) {
             imagep(icl[[s]][['time']], icl[[s]][['freq']], icl[[s]][['spec']],
                    ylab='Frequency [Hz]', drawTimeRange = FALSE,
                    zlab=time[s], col=oceColorsViridis,
-                   zlim=c(0, 40), decimate=FALSE)
+                   zlim=c(0, 100), decimate=FALSE)
         } else if (input$select == 3) {
             if (is.null(state$whichips)) {
                 s <- length(ipsTime)
