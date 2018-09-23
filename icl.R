@@ -69,13 +69,13 @@ if (run) {
         }
         if (!interactive()) dev.off()
     }
+    time <- time[!is.na(time)]
     time <- numberAsPOSIXct(time)
 
     o <- order(time)
     icl <- icl[o]
     time <- time[o]
     spec <- spec[o, ]
-
     ## d <- which(diff(time) == 0)
     ## icl <- icl[-d]
     ## time <- time[-d]
