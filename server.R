@@ -84,6 +84,12 @@ shinyServer(function(input, output) {
     state <- reactiveValues()
     
     output$plot <- renderPlot({
+        load('mc.rda')
+        load('met.rda')
+        load('baro.rda')
+        load('ips.rda')
+        load('icl.rda')
+        load('adp.rda')
         ipsTime <- numberAsPOSIXct(unlist(lapply(ips, function(x) x[['time']])))
         maxDraft <- unlist(lapply(ips, function(x) x[['maxDraft']]))
         meanDraft <- unlist(lapply(ips, function(x) x[['meanDraft']]))
@@ -251,10 +257,6 @@ shinyServer(function(input, output) {
     })
 
     output$plot2 <- renderPlot( {
-        ipsTime <- numberAsPOSIXct(unlist(lapply(ips, function(x) x[['time']])))
-        maxDraft <- unlist(lapply(ips, function(x) x[['maxDraft']]))
-        meanDraft <- unlist(lapply(ips, function(x) x[['meanDraft']]))
-        pAtm <- unlist(lapply(ips, function(x) x[['barometricPressure']]))/10
         if (input$select == 1) {
             if (input$mc == "All") {
                 mcplot(mc, "T/S")
