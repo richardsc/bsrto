@@ -1,7 +1,7 @@
 rm(list=ls())
 library(oce)
 
-files <- dir('/data/archive/barrow/2017/bsrto/icl', full.names=TRUE)
+files <- dir('/data/archive/barrow/2018/bsrto/icl', full.names=TRUE)
 
 if (!interactive()) {
     if (!('icl' %in% dir())) system('mkdir icl')
@@ -57,11 +57,11 @@ if (run) {
             tn <- as.numeric(t) - as.numeric(t)[1]
             freq <- as.numeric(gsub('X', '', names(dd)))
             par(mfrow=c(2, 1))
-            imagep(tn, freq, s, xlab='Time [s]', ylab='Freq [Hz]', zlim=c(0, 50),
+            imagep(tn, freq, s, xlab='Time [s]', ylab='Freq [Hz]', zlim=c(0, 100),
                    zlab=numberAsPOSIXct(time[i]),
                    col=oceColorsJet)
             matplot(freq, t(s), type='l', lty=1, col='lightgrey', xlab='Freq [Hz]',
-                    ylab='Spectrum', ylim=c(0, 50))
+                    ylab='Spectrum', ylim=c(0, 100))
             lines(freq, savg, lwd=3)    
             grid()
             cat('done\n')

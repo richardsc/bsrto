@@ -1,7 +1,7 @@
 rm(list=ls())
 library(oce)
 
-datadir <- '/data/archive/barrow/2017/bsrto/hpb/'
+datadir <- '/data/archive/barrow/2018/bsrto/hpb/'
 
 system(paste0('cat ', datadir, '* > baro.hpb'))
 

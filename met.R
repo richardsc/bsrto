@@ -14,7 +14,7 @@ pcorr <- function(p0, h=68, g=9.80665, M=0.0289644, R0=8.31447, T0=288.15,
     }
 }
 
-datadir <- '/data/archive/barrow/2017/bsrto/met/'
+datadir <- '/data/archive/barrow/2018/bsrto/met/'
 files <- dir(datadir)
 
 d <- list()

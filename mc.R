@@ -2,13 +2,15 @@ rm(list=ls())
 library(oce)
 pl <- oce.plot.ts
 
-datadir <- '/data/archive/barrow/2017/bsrto/'
+datadir <- '/data/archive/barrow/2018/bsrto/'
 
 inst <- c('mcH', 'mcA', 'imm', 'mcI')
 mc_names <- list(mcH=c('temperature', 'conductivity', 'pressure', 'salinity', 'soundSpeed', 'date', 'time'),
-                 mcA=c('temperature', 'conductivity', 'pressure', 'oxygen', 'salinity', 'soundSpeed', 'date', 'time', 'sample'),
+                 ## mcA=c('temperature', 'conductivity', 'pressure', 'oxygen', 'salinity', 'soundSpeed', 'date', 'time', 'sample'), #2017
+                 mcA=c('temperature', 'conductivity', 'pressure', 'oxygen', 'salinity', 'soundSpeed', 'date', 'time'), #2018
                  imm=c('serialNumber', 'temperature', 'conductivity', 'pressure', 'date', 'time', 'sample'),
-                 mcI=c('temperature', 'conductivity', 'pressure', 'salinity', 'soundSpeed', 'date', 'time'))
+                 ## mcI=c('temperature', 'conductivity', 'pressure', 'salinity', 'soundSpeed', 'date', 'time')) # 2017
+                 mcI=c('temperature', 'conductivity', 'pressure', 'oxygen', 'salinity', 'soundSpeed', 'date', 'time')) # 2018
 
 i <- 1
 mc <- list()
@@ -24,7 +26,21 @@ for (m in inst) {
         system("mv imm.mc imm_old.mc")
         system("mv imm_clean.mc imm.mc")
     }
-    dd <- read.csv(paste0(m, '.mc'), col.names=mc_names[[i]], stringsAsFactors=FALSE)
+    if (m == 'mcI') {
+        con <- file('mcI.mc')
+        dd <- readLines(con)
+        close(con)
+        ## Need to remove the "start sample", "start time", and empty lines (groups of 3)
+        II <- grep('start sample', dd)
+        III <- NULL
+        for (ii in seq_along(II)) {
+            III <- c(III, II[ii], II[ii]+1, II[ii]+2)
+        }
+        dd <- dd[-III]
+        dd <- read.csv(text=dd, col.names=mc_names[[i]], stringsAsFactors=FALSE)
+    } else {
+        dd <- read.csv(paste0(m, '.mc'), col.names=mc_names[[i]], stringsAsFactors=FALSE)
+    }
     time <- as.POSIXct(paste(dd$date, dd$time), format='%d %b %Y %H:%M:%S', tz='UTC')
     ## any with messed up times? (e.g. sample 544 from imm)
     bad <- is.na(time)
