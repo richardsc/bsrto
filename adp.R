@@ -54,6 +54,10 @@ hh <- hh + dec$declination
 adp[['headingOriginal']] <- adp[['heading']]
 adp[['heading']] <- hh + 45
 
+## the 2018 ADCP doesn't have a pressure sensor, so we need to interpolate the mcA pressure
+load('mc.rda')
+adp[['pressure']] <- approx(mc[['mcA']][['time']], mc[['mcA']][['pressure']], adp[['time']])$y
+
 ## trim bins that are less than 15% of the range to the surface
 ## (FIXME: not trimming for ice yet)
 adp <- subset(adp, distance < max(adp[['pressure']], na.rm=TRUE))
