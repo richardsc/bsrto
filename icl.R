@@ -25,6 +25,7 @@ if (nimage == 0) {
 }
 
 if (run) {
+    ii <- length(time) + 1
     for (i in (nimage+1):length(files)) {
     ## i <- nimage + 1
     ## for (f in files[(nimage+1):length(files)]) {
@@ -48,7 +49,7 @@ if (run) {
             plot(1, 1, axes=FALSE, xlab='', ylab='', pch=NA)
             text(1, 1, 'Corrupt spectrum')
         } else {
-            time[i] <- as.POSIXct(paste(startdate, starttime), tz='UTC')
+            time[ii] <- as.POSIXct(paste(startdate, starttime), tz='UTC')
             s <- as.matrix(dd)
             savg <- apply(s, 2, mean, na.rm=TRUE)
             spec <- rbind(spec, savg)
@@ -65,7 +66,8 @@ if (run) {
             lines(freq, savg, lwd=3)    
             grid()
             cat('done\n')
-            icl[[i]] <- list(freq=freq, time=numberAsPOSIXct(t), spec=s)
+            icl[[ii]] <- list(freq=freq, time=numberAsPOSIXct(t), spec=s)
+            ii <- ii + 1
         }
         if (!interactive()) dev.off()
     }
