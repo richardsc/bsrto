@@ -5,6 +5,7 @@ datadir <- '/data/archive/barrow/2018/bsrto/pcm'
 
 files <- dir(datadir, full.names = TRUE)
 
+N <- 3 # number of points to average for the compass reading
 pc <- list()
 i <- 1
 for (file in files) {
@@ -35,11 +36,11 @@ for (file in files) {
                 m <- lm(h ~ tn)
                 p <- summary(m)$coefficients[,4][[2]]
                 pc[[i]] <- list(startTime=startTime, time=sampleTime, heading=h,
-                                meanHeading=mean(h, na.rm=TRUE), sdHeading=sd(h, na.rm=TRUE),
+                                meanHeading=mean(tail(h, N), na.rm=TRUE), sdHeading=sd(tail(h, N), na.rm=TRUE),
                                 trend=coef(m)[[2]], p=p)
             } else {
                 pc[[i]] <- list(startTime=startTime, time=sampleTime, heading=h,
-                                meanHeading=mean(h, na.rm=TRUE), sdHeading=sd(h, na.rm=TRUE))
+                                meanHeading=mean(tail(h, N), na.rm=TRUE), sdHeading=sd(tail(h, N), na.rm=TRUE))
             }
         }
     } else {
