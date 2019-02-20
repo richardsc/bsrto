@@ -1,8 +1,13 @@
 rm(list=ls())
 library(oce)
 library(curl)
+dalftp <- TRUE
 
-url <- 'ftp://ftp.dfo-mpo.gc.ca/pittmanm/bsrto/2018-2019/'
+if (dalftp) {
+    url <- 'ftp://dfoftp.ocean.dal.ca/pub/dfo/BSRTO/2018-2019/'
+} else {
+    url <- 'ftp://ftp.dfo-mpo.gc.ca/pittmanm/bsrto/2018-2019/'
+}
 
 dirs <- c('hpb/',
           'icl/',
@@ -25,8 +30,13 @@ for (dir in dirs) {
     cat('* Reading', paste0(url, dir), '...')
     con <- curl(paste0(url, dir))
     tmp <- readLines(con)
-    nonzero <- read.table(text=tmp, stringsAsFactors=FALSE)$V3 != 0
-    files[[i]] <- read.table(text=tmp, stringsAsFactors=FALSE)$V4[nonzero]
+    if (dalftp) {
+        nonzero <- read.table(text=tmp, stringsAsFactors=FALSE)$V5 != 0
+        files[[i]] <- read.table(text=tmp, stringsAsFactors=FALSE)$V9[nonzero]
+    } else {
+        nonzero <- read.table(text=tmp, stringsAsFactors=FALSE)$V3 != 0
+        files[[i]] <- read.table(text=tmp, stringsAsFactors=FALSE)$V4[nonzero]
+    }
     i <- i + 1
     close(con)
     cat('done\n')

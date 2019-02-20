@@ -36,38 +36,44 @@ if (run) {
         close(con)
         startdate <- unlist(strsplit(h[grep('Start Date', h)], '\t'))[2]
         starttime <- unlist(strsplit(h[grep('Start Time', h)], '\t'))[2]
-        d <- read.delim(f, stringsAsFactors=FALSE, skip=29)
-        sdim <- c(length(d$Time), 410) # dim is always this size
-        dd <- try(d[,7:416], silent=TRUE)
         if (!interactive()) png(paste0('icl/icl-', sprintf('%04d', i), '.png'))
-        if (inherits(dd, 'try-error')) {
-            warning(paste('Corrupt spectrum detected on', paste(startdate, starttime)))
-            plot(1, 1, axes=FALSE, xlab='', ylab='', pch=NA)
-            text(1, 1, 'Corrupt spectrum')
-        } else if (is.character(as.matrix(dd))) {
+        d <- try(read.delim(f, stringsAsFactors=FALSE, skip=29), silent=TRUE)
+        if (inherits(d, 'try-error')) {
             warning(paste('Corrupt spectrum detected on', paste(startdate, starttime)))
             plot(1, 1, axes=FALSE, xlab='', ylab='', pch=NA)
             text(1, 1, 'Corrupt spectrum')
         } else {
-            time[ii] <- as.POSIXct(paste(startdate, starttime), tz='UTC')
-            s <- as.matrix(dd)
-            savg <- apply(s, 2, mean, na.rm=TRUE)
-            spec <- rbind(spec, savg)
-            ##t <- as.POSIXct(paste0(startdate, d$Time), tz='UTC')
-            t <- tail(time, 1) + seq(0, length(d$Time)-1)
-            tn <- as.numeric(t) - as.numeric(t)[1]
-            freq <- as.numeric(gsub('X', '', names(dd)))
-            par(mfrow=c(2, 1))
-            imagep(tn, freq, s, xlab='Time [s]', ylab='Freq [Hz]', zlim=c(0, 100),
-                   zlab=numberAsPOSIXct(time[i]),
-                   col=oceColorsJet)
-            matplot(freq, t(s), type='l', lty=1, col='lightgrey', xlab='Freq [Hz]',
-                    ylab='Spectrum', ylim=c(0, 100))
-            lines(freq, savg, lwd=3)    
-            grid()
-            cat('done\n')
-            icl[[ii]] <- list(freq=freq, time=numberAsPOSIXct(t), spec=s)
-            ii <- ii + 1
+            sdim <- c(length(d$Time), 410) # dim is always this size
+            dd <- try(d[,7:416], silent=TRUE)
+            if (inherits(dd, 'try-error')) {
+                warning(paste('Corrupt spectrum detected on', paste(startdate, starttime)))
+                plot(1, 1, axes=FALSE, xlab='', ylab='', pch=NA)
+                text(1, 1, 'Corrupt spectrum')
+            } else if (is.character(as.matrix(dd))) {
+                warning(paste('Corrupt spectrum detected on', paste(startdate, starttime)))
+                plot(1, 1, axes=FALSE, xlab='', ylab='', pch=NA)
+                text(1, 1, 'Corrupt spectrum')
+            } else {
+                time[ii] <- as.POSIXct(paste(startdate, starttime), tz='UTC')
+                s <- as.matrix(dd)
+                savg <- apply(s, 2, mean, na.rm=TRUE)
+                spec <- rbind(spec, savg)
+                ##t <- as.POSIXct(paste0(startdate, d$Time), tz='UTC')
+                t <- tail(time, 1) + seq(0, length(d$Time)-1)
+                tn <- as.numeric(t) - as.numeric(t)[1]
+                freq <- as.numeric(gsub('X', '', names(dd)))
+                par(mfrow=c(2, 1))
+                imagep(tn, freq, s, xlab='Time [s]', ylab='Freq [Hz]', zlim=c(0, 100),
+                       zlab=numberAsPOSIXct(t[1]),
+                       col=oceColorsJet)
+                matplot(freq, t(s), type='l', lty=1, col='lightgrey', xlab='Freq [Hz]',
+                        ylab='Spectrum', ylim=c(0, 100))
+                lines(freq, savg, lwd=3)    
+                grid()
+                cat('done\n')
+                icl[[ii]] <- list(freq=freq, time=numberAsPOSIXct(t), spec=s)
+                ii <- ii + 1
+            }
         }
         if (!interactive()) dev.off()
     }
