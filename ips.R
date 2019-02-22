@@ -37,6 +37,10 @@ for (file in files) {
     d <- readLines(con)
     close(con)
     time <- numberAsPOSIXct(unlist(strsplit(d[1], ' '))[1])
+    if (time < as.POSIXct('2018-01-01', tz='UTC')) {
+        time  <- as.POSIXct(paste(unlist(strsplit(d[1], ' '))[-(1:2)], collapse=' '),
+                            format='%b %d %H:%M:%S %Y', tz='UTC')
+    }
     tmp <- as.numeric(unlist(strsplit(d[3], ' ')))
     maxDraft <- tmp[1]
     minDraft <- tmp[2]
