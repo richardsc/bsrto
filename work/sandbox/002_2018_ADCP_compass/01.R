@@ -1,8 +1,10 @@
 library(oce)
 load('../../../adp.rda')
 load('../../../pc.rda')
+pl <- oce.plot.ts
 
 focus <- as.POSIXct(c('2018-08-29 02:00:00', '2019-02-17 04:08:00'), tz='UTC')
+adpFull <- adp
 adp <- subset(adp, focus[1] <= time & time <= focus[2])
 lon <- -91.25105
 lat <- 74.60635
@@ -41,12 +43,38 @@ lines(predict(hsp), col=2, lwd=3)
 grid()
 abline(0, 1)
 
-plot(hpc, hpc - hadp,
+plot(hpc, hadp - hpc,
      xlab='Pole Compass Heading', ylab='ADCP Heading')
-lines(approx(predict(hsp))$x, approx(predict(hsp))$x - approx(predict(hsp))$y, col=2, lwd=3)
+##lines(approx(predict(hsp))$x, approx(predict(hsp))$x - approx(predict(hsp))$y, col=2, lwd=3)
+lines(0:400, predict(hsp, 0:400)$y - 0:400, col=2, lwd=3)
 grid()
 
-hist(hpc - (hadp + dec), 100,
+hist((hadp + dec) - hpc, 100,
      main='', xlab=expression(Delta*Heading))
+
+
+## To make a prediction of the heading based on the measured ADCP
+## heading, we need a spline that is opposite to the above:
+hsp2 <- smooth.spline(hadp, hpc)
+
+## Predict heading for period after pole compass died
+tf <- adpFull[['time']]
+hadpf <- adpFull[['headingOriginal']] + magneticField(rep(lon, length(tf)), rep(lat, length(tf)),
+                                                      tf)$declination
+hnew <- predict(hsp2, hadpf)$y
+pl(tf, hnew)
+lines(t, hpc, col=2)
+
+hist(hnew, 100)
+hist(hpc, 100, col=2, add=TRUE)
+
+hnew[hnew < 0] <- hnew[hnew < 0] + 360
+hnew[hnew >= 360] <- hnew[hnew >= 360] - 360
+II <- tf > focus[2]
+adpFull[['heading']][II] <- hnew[II]
+
+enu <- toEnu(adpFull)
+
+plot(enu, which=19:20)
 
 if (!interactive()) dev.off()
