@@ -1,4 +1,5 @@
 library(oce)
+pl <- oce.plot.ts
 load('../../../adp.rda')
 load('../../../pc.rda')
 pl <- oce.plot.ts
@@ -13,11 +14,14 @@ dec <- magneticField(rep(lon, length(t)), rep(lat, length(t)), t)$declination
 
 hpc <- adp[['heading']]
 hadp <- adp[['headingOriginal']] + dec
-
 ## clean up the ADCP heading to unwrap negatives and angles with large differences from the PC
 hadp[hadp < 0] <- hadp[hadp < 0] + 360
 II <- abs(hadp - hpc) > 180
 hadp[II] <- hadp[II] + 360
+II <- hpc > 360
+hpc[II] <- hpc[II] - 360
+hadp[II] <- hadp[II] - 360
+
 ## plot(hpc, hadp)
 
 if (!interactive()) pdf('01.pdf')
@@ -51,7 +55,6 @@ grid()
 
 hist((hadp + dec) - hpc, 100,
      main='', xlab=expression(Delta*Heading))
-
 
 ## To make a prediction of the heading based on the measured ADCP
 ## heading, we need a spline that is opposite to the above:
