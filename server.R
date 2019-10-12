@@ -1,7 +1,7 @@
 library(shiny)
 library(oce)
 load('mc.rda')
-load('met.rda')
+##load('met.rda')
 load('baro.rda')
 load('ips.rda')
 load('icl.rda')
@@ -85,7 +85,7 @@ shinyServer(function(input, output) {
     
     output$plot <- renderPlot({
         load('mc.rda')
-        load('met.rda')
+        ## load('met.rda')
         load('baro.rda')
         load('ips.rda')
         load('icl.rda')

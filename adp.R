@@ -14,18 +14,18 @@ findNearest <- function(x, value, na.val=-9999) {
     return(out)
 }
 
-dir <- '/data/archive/barrow/2018/bsrto/rdi/'
+dir <- '/data/archive/barrow/2019/bsrto/rdi/'
 
 ## Cat all the files together to make one complete one
 ## Need to check to only include files that have 741 bytes (complete ensemble)
-files <- list.files('/data/archive/barrow/2018/bsrto/rdi', full.names=TRUE, pattern='*.rdi')
+files <- list.files('/data/archive/barrow/2019/bsrto/rdi', full.names=TRUE, pattern='*.rdi')
 size <- file.info(files)$size
 wrongSize <- which(size != 741)
 for (i in wrongSize) {
     system(paste0('rm ', files[i]))
 }
 cat('* Removed', length(wrongSize), 'bad RDI files\n')
-system('cat /data/archive/barrow/2018/bsrto/rdi/*.rdi > adp.000')
+system('cat /data/archive/barrow/2019/bsrto/rdi/*.rdi > adp.000')
 
 adp <- read.oce('adp.000')
 
@@ -54,9 +54,9 @@ hh <- hh + dec$declination
 adp[['headingOriginal']] <- adp[['heading']]
 adp[['heading']] <- hh + 45
 
-## the 2018 ADCP doesn't have a pressure sensor, so we need to interpolate the mcA pressure
-load('mc.rda')
-adp[['pressure']] <- approx(mc[['mcA']][['time']], mc[['mcA']][['pressure']], adp[['time']])$y
+## ## the 2018 ADCP doesn't have a pressure sensor, so we need to interpolate the mcA pressure
+## load('mc.rda')
+## adp[['pressure']] <- approx(mc[['mcA']][['time']], mc[['mcA']][['pressure']], adp[['time']])$y
 
 ## trim bins that are less than 15% of the range to the surface
 ## (FIXME: not trimming for ice yet)

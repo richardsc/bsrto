@@ -1,7 +1,7 @@
 rm(list=ls())
 library(oce)
 
-datadir <- '/data/archive/barrow/2018/bsrto/ips/'
+datadir <- '/data/archive/barrow/2019/bsrto/ips/'
 
 files <- dir(datadir, full.names = TRUE)
 
@@ -84,7 +84,7 @@ for (file in files) {
         ## shore station barometer
         II <- time <= baro$time & baro$time <= time + 6*3600
         barometricPressure <- mean(baro$patm[II], na.rm=TRUE)
-        if (is.nan(barometricPressure)) barometricPressure <- ips[[i-1]]$barometricPressure # take the last value
+        if (i > 1 & is.nan(barometricPressure)) barometricPressure <- ips[[i-1]]$barometricPressure # take the last value
         ## correct all the patm dependent fields
         
         ips[[i]] <- list(time=time, barometricPressure=barometricPressure,
