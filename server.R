@@ -112,7 +112,7 @@ shinyServer(function(input, output) {
             } else if (input$select == 3) {
                 if (is.null(state$xlim)) {
                     oce.plot.ts(ipsTime, maxDraft-pAtm, type='b', pch=3,
-                                ylim=c(-1, max(maxDraft-pAtm)),
+                                ylim=c(-1, max(maxDraft-pAtm, na.rm=TRUE)),
                                 ylab='Ice draft [m]')
                     grid()
                     legend('topleft', c('Maximum Draft', 'Mean Draft'), pch=c(3, 1))
