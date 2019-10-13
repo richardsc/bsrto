@@ -8,7 +8,7 @@ shinyUI(fluidPage(titlePanel('BSRTO data browser'),
                                                  "Ice thickness" = 3,
                                                  "Water currents" = 4,
                                                  "Shore Station barometer" = 5),
-                                                 ## "Resolute weather data" = 6),
+                                                 "Resolute weather data" = 6),
                                                  selected = 1),
                       conditionalPanel(
                           condition = "input.select == 1",
