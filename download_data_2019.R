@@ -126,12 +126,12 @@ if (length(metdir) < 1) {
 
 cat('* checking met data\n')
 for (i in seq_along(mon)) {
-    download.met(54199, year[i], mon[i], destdir=destdir)
+    download.met(54199, year[i], mon[i], destdir=destdir, type='csv')
 }
 
 met_files <- dir(destdir, pattern='*.csv')
 ## Remove the last file and re-download
 if (length(met_files) > 0) file.remove(paste0(destdir, tail(met_files, 1)))
 for (i in seq_along(mon)) {
-    download.met(54199, year[i], mon[i], destdir=destdir)
+    download.met(54199, year[i], mon[i], destdir=destdir, type='csv')
 }
