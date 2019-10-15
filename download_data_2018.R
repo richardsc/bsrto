@@ -1,12 +1,12 @@
 rm(list=ls())
 library(oce)
 library(curl)
-dalftp <- FALSE
+dalftp <- TRUE
 
 if (dalftp) {
-    url <- 'ftp://dfoftp.ocean.dal.ca/pub/dfo/BSRTO/2019-2020/'
+    url <- 'ftp://dfoftp.ocean.dal.ca/pub/dfo/BSRTO/2018-2019/'
 } else {
-    url <- 'ftp://ftp.dfo-mpo.gc.ca/pittmanm/bsrto/2019-2020/'
+    url <- 'ftp://ftp.dfo-mpo.gc.ca/pittmanm/bsrto/2018-2019/'
 }
 
 dirs <- c('hpb/',
@@ -20,7 +20,7 @@ dirs <- c('hpb/',
           'pcm/',
           'rdi/')
 
-savedir <- '/data/archive/barrow/2019/'
+savedir <- '/data/archive/barrow/2018/'
 
 ## First need to go through each directory to get a listing of the files
 ## We will exclude any files that have 0 size, as they will not result in a downloaded file and will retry every time the script is run
@@ -30,16 +30,12 @@ for (dir in dirs) {
     cat('* Reading', paste0(url, dir), '...')
     con <- curl(paste0(url, dir))
     tmp <- readLines(con)
-    if (length(tmp) > 0) {
-        if (dalftp) {
-            nonzero <- read.table(text=tmp, stringsAsFactors=FALSE)$V5 != 0
-            files[[i]] <- read.table(text=tmp, stringsAsFactors=FALSE)$V9[nonzero]
-        } else {
-            nonzero <- read.table(text=tmp, stringsAsFactors=FALSE)$V3 != 0
-            files[[i]] <- read.table(text=tmp, stringsAsFactors=FALSE)$V4[nonzero]
-        }
+    if (dalftp) {
+        nonzero <- read.table(text=tmp, stringsAsFactors=FALSE)$V5 != 0
+        files[[i]] <- read.table(text=tmp, stringsAsFactors=FALSE)$V9[nonzero]
     } else {
-        cat('  ** found no files in ', dir, '\n')
+        nonzero <- read.table(text=tmp, stringsAsFactors=FALSE)$V3 != 0
+        files[[i]] <- read.table(text=tmp, stringsAsFactors=FALSE)$V4[nonzero]
     }
     i <- i + 1
     close(con)
@@ -87,7 +83,7 @@ for (dir in dirs) {
 ##-----------------------
 ## Separate from the bsrto FTP site we want to download weather data
 ## from the Resolute Airport through Environment Canada
-startYear <- 2019
+startYear <- 2017
 startMonth <- 8
 endYear <- as.POSIXlt(Sys.time())$year + 1900
 endMonth <- as.POSIXlt(Sys.time())$mon + 1
