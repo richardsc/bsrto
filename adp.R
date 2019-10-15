@@ -80,6 +80,12 @@ for (j in seq_along(adp[['distance']])) {
 
 adp <- subset(adp, distance %in% distance[!remove])
 
+## despike the bottom track velocities
+for (i in 1:4) {
+    bad <- abs(adp[['bv']][,i]) > 2
+    adp[['bv']][bad,i] <- NA
+}
+
 ## convert to ENU coordinates
 enu <- toEnu(adp)
 enu <- oceSetData(enu, 've', apply(enu[['v']][,,1], 1, mean, na.rm=TRUE))
