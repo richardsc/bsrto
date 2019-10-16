@@ -1,6 +1,11 @@
 library(shiny)
 
 shinyUI(fluidPage(titlePanel('BSRTO data browser'), 
+
+                  fluidRow(column(12, checkboxInput("instructions", "Show instructions", value=TRUE))),
+                  fluidRow(conditionalPanel(condition="input.instructions",
+                                            includeMarkdown("help.md"))),
+
                   sidebarLayout(sidebarPanel(
                       selectInput("select", label = h3("Select Data type"), 
                                   choices = list("Water properties" = 1,
