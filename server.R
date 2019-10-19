@@ -19,8 +19,8 @@ names(timelist) <- format(time)
 mcplot <- function(x, field, xlim, pch=21, col, add=FALSE) {
     if (length(x) > 1) {
         ## if (missing(xlim)) xlim <- range(x[[1]][['time']])
-        if (missing(xlim)) xlim <- c(min(unlist(lapply(mc, function(x) min(x[['time']])))),
-                                     max(unlist(lapply(mc, function(x) min(x[['time']])))))
+        if (missing(xlim)) xlim <- c(min(unlist(lapply(mc, function(x) min(x[['time']], na.rm=TRUE)))),
+                                     max(unlist(lapply(mc, function(x) max(x[['time']], na.rm=TRUE)))))
         if (field == "T/S") {
             Srange <- range(unlist(lapply(x, function(x) x[['salinity']])), na.rm=TRUE)
             Trange <- range(unlist(lapply(x, function(x) x[['temperature']])), na.rm=TRUE)

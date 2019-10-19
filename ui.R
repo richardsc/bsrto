@@ -41,7 +41,7 @@ shinyUI(fluidPage(titlePanel('BSRTO data browser'),
                           h4("Click/Drag top panel to zoom.")),
                       conditionalPanel(
                           condition = "input.select == 1",
-                          radioButtons("mc", "Instrument Depth", c("40m", "60m", "80m", "160m", "All"),
+                          radioButtons("mc", "Instrument Depth", c("40m", "60m", "160m", "All"),
                                        selected = "40m")),
                       conditionalPanel(
                           condition = "input.select == 1",
