@@ -1,7 +1,7 @@
 rm(list=ls())
 library(oce)
 library(curl)
-dalftp <- FALSE
+dalftp <- TRUE
 
 if (dalftp) {
     url <- 'ftp://dfoftp.ocean.dal.ca/pub/dfo/BSRTO/2019-2020/'
