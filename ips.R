@@ -32,6 +32,7 @@ load('baro.rda')
 
 i <- 1
 ips <- list()
+files <- files[-grep('200223AA.bn4', files)]
 for (file in files) {
     con <- file(file)
     dd <- readLines(con)
