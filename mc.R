@@ -2,14 +2,19 @@ rm(list=ls())
 library(oce)
 pl <- oce.plot.ts
 
-datadir <- '/data/archive/barrow/2019/bsrto/'
+datadir <- '/data/archive/barrow/2022/bsrto/'
+#datadir <- 'C:/Users/NuddsS/Desktop/BSRTO_2022-23/bsrto/'
 
-inst <- c('mcH', 'mcA', 'imm', 'mcI')
+
+#inst <- c('mcH', 'mcA', 'imm', 'mcI')
+# no imm for 2022
+inst <- c('mcH', 'mcA', 'mcI')
 mc_names <- list(mcH=c('temperature', 'conductivity', 'pressure', 'salinity', 'soundSpeed', 'date', 'time'),
                  ## mcA=c('temperature', 'conductivity', 'pressure', 'oxygen', 'salinity', 'soundSpeed', 'date', 'time', 'sample'), #2017
                  ## mcA=c('temperature', 'conductivity', 'pressure', 'oxygen', 'salinity', 'soundSpeed', 'date', 'time'), #2018
-                 mcA=c('temperature', 'conductivity', 'pressure', 'oxygen', 'salinity', 'date', 'time'), #2019
-                 imm=c('serialNumber', 'temperature', 'conductivity', 'pressure', 'date', 'time', 'sample'),
+                 #mcA=c('temperature', 'conductivity', 'pressure', 'oxygen', 'salinity', 'date', 'time'), #2019
+                 mcA=c('temperature', 'conductivity', 'pressure', 'oxygen', 'salinity', 'soundSpeed', 'date', 'time'), #2022
+                 #imm=c('serialNumber', 'temperature', 'conductivity', 'pressure', 'date', 'time', 'sample'),
                  ## mcI=c('temperature', 'conductivity', 'pressure', 'salinity', 'soundSpeed', 'date', 'time')) # 2017
                  mcI=c('temperature', 'conductivity', 'pressure', 'oxygen', 'salinity', 'soundSpeed', 'date', 'time')) # 2018
 
@@ -23,6 +28,7 @@ for (m in inst) {
     if (jnk > 0) { ## check for an empty directory
         cat('* No files found in', m, '\n')
         empty <- c(empty, i)
+    
     } else {
         
         ## sometimes garbage characters get inserted at the beginning of
@@ -45,6 +51,7 @@ for (m in inst) {
                 III <- c(III, II[ii], II[ii]+1, II[ii]+2)
             }
             dd <- dd[-III]
+            cat('* here')
             dd <- read.csv(text=dd, col.names=mc_names[[i]], stringsAsFactors=FALSE)
         } else {
             dd <- read.csv(paste0(m, '.mc'), col.names=mc_names[[i]], stringsAsFactors=FALSE)

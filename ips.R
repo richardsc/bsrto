@@ -1,7 +1,7 @@
 rm(list=ls())
 library(oce)
 
-datadir <- '/data/archive/barrow/2019/bsrto/ips/'
+datadir <- '/data/archive/barrow/2022/bsrto/ips/'
 
 files <- dir(datadir, full.names = TRUE)
 

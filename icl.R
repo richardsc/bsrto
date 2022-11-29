@@ -1,7 +1,7 @@
 rm(list=ls())
 library(oce)
 
-files <- dir('/data/archive/barrow/2019/bsrto/icl', full.names=TRUE)
+files <- dir('/data/archive/barrow/2022/bsrto/icl', full.names=TRUE)
 
 if (!interactive()) {
     if (!('icl' %in% dir())) system('mkdir icl')

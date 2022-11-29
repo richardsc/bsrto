@@ -14,18 +14,18 @@ findNearest <- function(x, value, na.val=-9999) {
     return(out)
 }
 
-dir <- '/data/archive/barrow/2019/bsrto/rdi/'
+dir <- '/data/archive/barrow/2022/bsrto/rdi/'
 
 ## Cat all the files together to make one complete one
 ## Need to check to only include files that have 741 bytes (complete ensemble)
-files <- list.files('/data/archive/barrow/2019/bsrto/rdi', full.names=TRUE, pattern='*.rdi')
+files <- list.files('/data/archive/barrow/2022/bsrto/rdi', full.names=TRUE, pattern='*.rdi')
 size <- file.info(files)$size
 wrongSize <- which(size != 741)
 for (i in wrongSize) {
     system(paste0('rm ', files[i]))
 }
 cat('* Removed', length(wrongSize), 'bad RDI files\n')
-system('cat /data/archive/barrow/2019/bsrto/rdi/*.rdi > adp.000')
+system('cat /data/archive/barrow/2022/bsrto/rdi/*.rdi > adp.000')
 
 adp <- read.oce('adp.000')
 
@@ -60,7 +60,8 @@ adp[['heading']] <- hh + 45
 
 ## trim bins that are less than 15% of the range to the surface
 ## (FIXME: not trimming for ice yet)
-adp <- subset(adp, distance < max(adp[['pressure']], na.rm=TRUE))
+maxp <- max(adp[['pressure']], na.rm=TRUE)
+adp <- subset(adp, distance < maxp)
 mask <- array(1, dim=c(length(adp[['time']]), length(adp[['distance']])))
 for (i in 1:4) {
     for (j in seq_along(adp[['time']])) {

@@ -6,7 +6,7 @@ mcplot <- function(x, field, xlim, pch=21, col, add=FALSE) {
     if (length(x) > 1) {
         ## if (missing(xlim)) xlim <- range(x[[1]][['time']])
         if (missing(xlim)) xlim <- c(min(unlist(lapply(x, function(y) min(y[['time']], na.rm=TRUE)))),
-                                     max(unlist(lapply(x, function(y) max(y[['time']], na.rm=TRUE)))))
+                                 max(unlist(lapply(x, function(y) max(y[['time']], na.rm=TRUE)))))
         if (field == "T/S") {
             Srange <- range(unlist(lapply(x, function(x) x[['salinity']])), na.rm=TRUE)
             Trange <- range(unlist(lapply(x, function(x) x[['temperature']])), na.rm=TRUE)
@@ -95,7 +95,7 @@ shinyServer(function(input, output, session) {
                 if (is.null(state$xlim)) {
                     oce.plot.ts(d$ipsTime, d$maxDraft-d$pAtm, type='b', pch=3,
                                 ylim=c(-1, max(d$maxDraft-d$pAtm, na.rm=TRUE)),
-                                ylab='Ice draft [m]')
+                                ylab='Ice draft [m]', xlim=state$xlim)
                     grid()
                     legend('topleft', c('Maximum Draft', 'Mean Draft'), pch=c(3, 1))
                     points(d$ipsTime, d$meanDraft-d$pAtm)
