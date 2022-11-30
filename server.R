@@ -95,7 +95,7 @@ shinyServer(function(input, output, session) {
                 if (is.null(state$xlim)) {
                     oce.plot.ts(d$ipsTime, d$maxDraft-d$pAtm, type='b', pch=3,
                                 ylim=c(-1, max(d$maxDraft-d$pAtm, na.rm=TRUE)),
-                                ylab='Ice draft [m]', xlim=state$xlim)
+                                ylab='Ice draft [m]')
                     grid()
                     legend('topleft', c('Maximum Draft', 'Mean Draft'), pch=c(3, 1))
                     points(d$ipsTime, d$meanDraft-d$pAtm)
