@@ -1,10 +1,10 @@
 rm(list=ls())
 library(oce)
 library(curl)
-dalftp <- FALSE
+dalftp <- TRUE
 
 if (dalftp) {
-    url <- 'ftp://dfoftp.ocean.dal.ca/pub/dfo/BSRTO/2022-2023/'
+    url <- 'ftp://dfocogg.ocean.dal.ca/pub/dfo/BSRTO/2022-2023/'
 } else {
     url <- 'ftp://ftp.dfo-mpo.gc.ca/pittmanm/bsrto/2022-2023/'
 }
@@ -21,10 +21,10 @@ dirs <- c('hpb/',
           'rdi/')
 
 # save to Linux
-#savedir <- '/data/archive/barrow/2022/'
+savedir <- '/data/archive/barrow/2022/'
 
 # save to Windows (for testing)
-savedir <- 'C:/Users/NuddsS/Desktop/BSRTO_2022-23/'
+## savedir <- 'C:/Users/NuddsS/Desktop/BSRTO_2022-23/'
 
 ## First need to go through each directory to get a listing of the files
 ## We will exclude any files that have 0 size, as they will not result in a downloaded file and will retry every time the script is run

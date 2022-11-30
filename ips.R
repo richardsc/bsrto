@@ -32,7 +32,7 @@ load('baro.rda')
 
 i <- 1
 ips <- list()
-files <- files[-grep('200223AA.bn4', files)]
+## files <- files[-grep('200223AA.bn4', files)] # not needed for 2022 data
 for (file in files) {
     con <- file(file)
     dd <- readLines(con)
