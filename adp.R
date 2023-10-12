@@ -60,7 +60,8 @@ adp[['heading']] <- hh + 45
 
 ## trim bins that are less than 15% of the range to the surface
 ## (FIXME: not trimming for ice yet)
-adp <- subset(adp, distance < max(adp[['pressure']], na.rm=TRUE))
+maxp <- max(adp[['pressure']], na.rm=TRUE)
+adp <- subset(adp, distance < maxp)
 mask <- array(1, dim=c(length(adp[['time']]), length(adp[['distance']])))
 for (i in 1:4) {
     for (j in seq_along(adp[['time']])) {
